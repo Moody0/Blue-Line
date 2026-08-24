@@ -1,8 +1,17 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { LayoutGrid, List, SlidersHorizontal, X, RotateCcw } from "lucide-react";
+import {
+  LayoutGrid,
+  List,
+  SlidersHorizontal,
+  X,
+  RotateCcw,
+  Sparkles,
+  ChevronDown,
+  CheckCircle2,
+} from "lucide-react";
 import { FilterSidebar, type FilterState } from "./filter-sidebar";
 import { ProductCard } from "./product-card";
 import {
@@ -12,6 +21,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { formatPrice } from "@/lib/formatters";
 import type { Category, Product } from "@/types/ecommerce";
 
 interface CategoryCatalogViewProps {
@@ -20,6 +30,17 @@ interface CategoryCatalogViewProps {
   initialProducts: Product[];
 }
 
+const COLOR_NAMES: Record<string, string> = {
+  "#D4D4D8": "كروم لامع",
+  "#18181B": "أسود مطفي",
+  "#EAB308": "ذهبي لامع",
+  "#3F3F46": "جرافيت مصقول",
+  "#B45309": "روز جولد",
+  "#71717A": "نيكل SuperSteel",
+};
+
+const INITIAL_PAGE_SIZE = 12;
+
 export function CategoryCatalogView({
   category,
   categories,
@@ -27,14 +48,44 @@ export function CategoryCatalogView({
 }: CategoryCatalogViewProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_PAGE_SIZE);
   const [sortBy, setSortBy] = useState<
     "best_selling" | "price_asc" | "price_desc" | "discount" | "newest"
   >("best_selling");
 
   const [filterState, setFilterState] = useState<FilterState>({});
 
+  // Reset pagination when filters or sort change
+  useEffect(() => {
+    setVisibleCount(INITIAL_PAGE_SIZE);
+  }, [filterState, sortBy]);
+
   const clearFilters = () => {
     setFilterState({});
+  };
+
+  // Remove individual active filter
+  const removeFilter = (key: keyof FilterState, value?: string) => {
+    setFilterState((prev) => {
+      const updated = { ...prev };
+      if (key === "selectedColors" && value) {
+        updated.selectedColors = (prev.selectedColors || []).filter(
+          (c) => c !== value
+        );
+        if (updated.selectedColors.length === 0) delete updated.selectedColors;
+      } else if (key === "selectedBrands" && value) {
+        updated.selectedBrands = (prev.selectedBrands || []).filter(
+          (b) => b !== value
+        );
+        if (updated.selectedBrands.length === 0) delete updated.selectedBrands;
+      } else if (key === "minPrice" || key === "maxPrice") {
+        delete updated.minPrice;
+        delete updated.maxPrice;
+      } else {
+        delete updated[key];
+      }
+      return updated;
+    });
   };
 
   // Compute facet counts dynamically
@@ -92,6 +143,17 @@ export function CategoryCatalogView({
       );
     }
 
+    // Brands
+    if (filterState.selectedBrands && filterState.selectedBrands.length > 0) {
+      list = list.filter((p) =>
+        filterState.selectedBrands!.some(
+          (b) =>
+            p.title_ar.toLowerCase().includes(b.toLowerCase()) ||
+            p.title_en?.toLowerCase().includes(b.toLowerCase())
+        )
+      );
+    }
+
     // Sorting
     if (sortBy === "price_asc") {
       list.sort(
@@ -121,6 +183,27 @@ export function CategoryCatalogView({
     return list;
   }, [initialProducts, filterState, sortBy]);
 
+  // Paginated slice
+  const displayedProducts = filteredProducts.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredProducts.length;
+  const progressPct = Math.min(
+    100,
+    Math.round((displayedProducts.length / (filteredProducts.length || 1)) * 100)
+  );
+
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + INITIAL_PAGE_SIZE);
+  };
+
+  // Determine active filter badges
+  const hasActiveFilters =
+    Boolean(filterState.inStockOnly) ||
+    Boolean(filterState.outOfStockOnly) ||
+    filterState.minPrice !== undefined ||
+    filterState.maxPrice !== undefined ||
+    Boolean(filterState.selectedColors && filterState.selectedColors.length > 0) ||
+    Boolean(filterState.selectedBrands && filterState.selectedBrands.length > 0);
+
   return (
     <div className="space-y-6 sm:space-y-8 font-alexandria select-none" dir="rtl">
       {/* Top Controls Toolbar */}
@@ -134,6 +217,9 @@ export function CategoryCatalogView({
           >
             <SlidersHorizontal size={14} className="text-[#1E6091]" />
             <span>تصفية وترتيب</span>
+            {hasActiveFilters && (
+              <span className="w-2 h-2 rounded-full bg-[#1E6091]" />
+            )}
           </button>
         </div>
 
@@ -160,14 +246,17 @@ export function CategoryCatalogView({
 
           {/* Sort Selector Dropdown */}
           <div className="flex items-center gap-2">
-            <label htmlFor="catalog-sort" className="text-text-muted font-bold hidden md:inline">
+            <label
+              htmlFor="catalog-sort"
+              className="text-text-muted font-bold hidden md:inline"
+            >
               الترتيب:
             </label>
             <select
               id="catalog-sort"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="h-9 px-3 pe-7 rounded-xl bg-surface-50 border border-border-default text-xs font-bold text-brand-900 focus:outline-none focus:border-accent-600 cursor-pointer shadow-2xs"
+              className="h-9 px-3 pe-7 rounded-xl bg-surface-50 border border-border-default text-xs font-bold text-brand-900 focus:outline-none focus:border-[#1E6091] cursor-pointer shadow-2xs"
             >
               <option value="best_selling">الأكثر طلباً ومبيعاً</option>
               <option value="price_asc">السعر: من الأقل للأعلى</option>
@@ -209,6 +298,89 @@ export function CategoryCatalogView({
         </div>
       </div>
 
+      {/* Feature 1: Active Filter Chips Bar */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-2 p-3 bg-surface-50/80 rounded-xl border border-border-default/70 animate-in fade-in duration-200">
+          <span className="text-xs font-bold text-text-muted ps-1">
+            الفلاتر النشطة:
+          </span>
+
+          {filterState.inStockOnly && (
+            <button
+              type="button"
+              onClick={() => removeFilter("inStockOnly")}
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-border-default rounded-full text-xs font-semibold text-brand-900 hover:border-destructive hover:text-destructive transition-colors group shadow-2xs cursor-pointer"
+            >
+              <span>متوفر في المخزون</span>
+              <X size={12} className="text-text-muted group-hover:text-destructive" />
+            </button>
+          )}
+
+          {filterState.outOfStockOnly && (
+            <button
+              type="button"
+              onClick={() => removeFilter("outOfStockOnly")}
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-border-default rounded-full text-xs font-semibold text-brand-900 hover:border-destructive hover:text-destructive transition-colors group shadow-2xs cursor-pointer"
+            >
+              <span>غير متوفر</span>
+              <X size={12} className="text-text-muted group-hover:text-destructive" />
+            </button>
+          )}
+
+          {(filterState.minPrice !== undefined ||
+            filterState.maxPrice !== undefined) && (
+            <button
+              type="button"
+              onClick={() => removeFilter("minPrice")}
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-border-default rounded-full text-xs font-semibold text-brand-900 hover:border-destructive hover:text-destructive transition-colors group shadow-2xs cursor-pointer"
+            >
+              <span>
+                السعر: {formatPrice(filterState.minPrice || 0)} -{" "}
+                {formatPrice(filterState.maxPrice || highestPrice)}
+              </span>
+              <X size={12} className="text-text-muted group-hover:text-destructive" />
+            </button>
+          )}
+
+          {filterState.selectedColors?.map((hex) => (
+            <button
+              key={hex}
+              type="button"
+              onClick={() => removeFilter("selectedColors", hex)}
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-border-default rounded-full text-xs font-semibold text-brand-900 hover:border-destructive hover:text-destructive transition-colors group shadow-2xs cursor-pointer"
+            >
+              <span
+                className="w-2.5 h-2.5 rounded-full border border-black/20"
+                style={{ backgroundColor: hex }}
+              />
+              <span>{COLOR_NAMES[hex] || "لون مخصص"}</span>
+              <X size={12} className="text-text-muted group-hover:text-destructive" />
+            </button>
+          ))}
+
+          {filterState.selectedBrands?.map((brand) => (
+            <button
+              key={brand}
+              type="button"
+              onClick={() => removeFilter("selectedBrands", brand)}
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-border-default rounded-full text-xs font-semibold text-brand-900 hover:border-destructive hover:text-destructive transition-colors group shadow-2xs cursor-pointer"
+            >
+              <span>علامة: {brand}</span>
+              <X size={12} className="text-text-muted group-hover:text-destructive" />
+            </button>
+          ))}
+
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="ms-auto inline-flex items-center gap-1 text-xs font-bold text-destructive hover:underline pe-1 cursor-pointer"
+          >
+            <RotateCcw size={12} />
+            <span>مسح الكل</span>
+          </button>
+        </div>
+      )}
+
       {/* Main Catalog Workspace: Filter Sidebar + Products Grid */}
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start">
         {/* Desktop Filter Sidebar (RTL Right side) */}
@@ -220,11 +392,11 @@ export function CategoryCatalogView({
           onClearFilters={clearFilters}
           highestPrice={highestPrice}
           stockCounts={stockCounts}
-          className="hidden lg:block"
+          className="hidden lg:block sticky top-24"
         />
 
         {/* Product Listing Area */}
-        <div className="flex-1 w-full min-w-0">
+        <div className="flex-1 w-full min-w-0 space-y-10">
           {filteredProducts.length === 0 ? (
             <div className="py-20 text-center space-y-4 bg-[#F8FAFC] border border-border-default/60 rounded-2xl p-8">
               <h3 className="text-lg font-bold text-brand-900">
@@ -242,33 +414,88 @@ export function CategoryCatalogView({
                 <span>إعادة ضبط الفلاتر</span>
               </button>
             </div>
-          ) : viewMode === "grid" ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  viewMode="grid"
-                />
-              ))}
-            </div>
           ) : (
-            <div className="space-y-4">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  viewMode="list"
-                />
-              ))}
-            </div>
+            <>
+              {/* Product Grid / List Display */}
+              {viewMode === "grid" ? (
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6">
+                  {displayedProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      viewMode="grid"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {displayedProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      viewMode="list"
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Feature 2: Progressive Load More & Visual Progress Bar */}
+              {filteredProducts.length > INITIAL_PAGE_SIZE && (
+                <div className="pt-8 pb-4 flex flex-col items-center justify-center space-y-4 border-t border-border-default/70">
+                  {/* Progress Text */}
+                  <p className="text-xs font-medium text-text-muted">
+                    تم عرض{" "}
+                    <span className="font-bold text-brand-900 font-mono">
+                      {displayedProducts.length}
+                    </span>{" "}
+                    من أصل{" "}
+                    <span className="font-bold text-brand-900 font-mono">
+                      {filteredProducts.length}
+                    </span>{" "}
+                    منتج متوفر
+                  </p>
+
+                  {/* Slim Luxury Progress Bar */}
+                  <div className="w-full max-w-xs h-1.5 bg-surface-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#1E6091] rounded-full transition-all duration-500 ease-out"
+                      style={{ width: `${progressPct}%` }}
+                    />
+                  </div>
+
+                  {/* Load More Button */}
+                  {hasMore ? (
+                    <button
+                      type="button"
+                      onClick={handleLoadMore}
+                      className="mt-2 inline-flex items-center justify-center gap-2 px-8 py-3 bg-white hover:bg-surface-50 text-brand-900 font-bold text-xs uppercase tracking-wider rounded-xl border border-border-strong hover:border-[#1E6091] shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
+                    >
+                      <span>عرض المزيد من المنتجات</span>
+                      <ChevronDown
+                        size={15}
+                        className="text-[#1E6091] group-hover:translate-y-0.5 transition-transform"
+                      />
+                    </button>
+                  ) : (
+                    <div className="inline-flex items-center gap-1.5 text-xs text-text-muted font-medium pt-1">
+                      <CheckCircle2 size={14} className="text-emerald-600" />
+                      <span>تم عرض كافة التشكيلات المتوفرة</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
 
       {/* Mobile Filter Sheet Drawer */}
       <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
-        <SheetContent side="bottom" className="max-h-[85vh] rounded-t-3xl p-6 font-alexandria overflow-y-auto" dir="rtl">
+        <SheetContent
+          side="bottom"
+          className="max-h-[85vh] rounded-t-3xl p-6 font-alexandria overflow-y-auto"
+          dir="rtl"
+        >
           <SheetHeader className="pb-4 border-b border-border-default text-start">
             <SheetTitle className="text-base font-bold text-brand-900">
               تصفية وترتيب المنتجات

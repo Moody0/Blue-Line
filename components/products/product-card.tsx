@@ -188,20 +188,33 @@ export function ProductCard({
         {/* Product Details */}
         <div className="p-6 flex-1 flex flex-col justify-between space-y-4 text-start">
           <div className="space-y-2">
-            {/* 5-Star Rating matching Top Rated */}
-            <div className="flex items-center gap-0.5 text-amber-400">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  size={13}
-                  className={cn(
-                    "shrink-0",
-                    star <= rating
-                      ? "fill-current text-amber-400"
-                      : "text-surface-200 fill-surface-200"
-                  )}
-                />
-              ))}
+            {/* Rating & Trust Badges */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-0.5 text-amber-400">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={13}
+                    className={cn(
+                      "shrink-0",
+                      star <= rating
+                        ? "fill-current text-amber-400"
+                        : "text-surface-200 fill-surface-200"
+                    )}
+                  />
+                ))}
+              </div>
+
+              {/* Trust Badge */}
+              {product.is_featured || rating >= 4.9 ? (
+                <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-1.5 py-0.5 rounded-sm">
+                  الأكثر طلباً ⭐
+                </span>
+              ) : (
+                <span className="text-[10px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-sm">
+                  ضمان معتمد 🛡️
+                </span>
+              )}
             </div>
 
             {/* Title */}
@@ -366,20 +379,33 @@ export function ProductCard({
 
       {/* Product Meta & Details Below Image in Arabic */}
       <div className="space-y-1.5 text-start">
-        {/* 5-Star Rating */}
-        <div className="flex items-center gap-0.5 text-amber-400">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <Star
-              key={star}
-              size={13}
-              className={cn(
-                "shrink-0",
-                star <= rating
-                  ? "fill-current text-amber-400"
-                  : "text-[#E2E8F0] fill-[#E2E8F0]"
-              )}
-            />
-          ))}
+        {/* Rating & Trust Badges */}
+        <div className="flex items-center justify-between gap-1">
+          <div className="flex items-center gap-0.5 text-amber-400">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                size={12}
+                className={cn(
+                  "shrink-0",
+                  star <= rating
+                    ? "fill-current text-amber-400"
+                    : "text-[#E2E8F0] fill-[#E2E8F0]"
+                )}
+              />
+            ))}
+          </div>
+
+          {/* Trust Badge */}
+          {product.is_featured || rating >= 4.9 ? (
+            <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-1.5 py-0.2 rounded-sm">
+              الأكثر طلباً ⭐
+            </span>
+          ) : (
+            <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.2 rounded-sm">
+              ضمان معتمد 🛡️
+            </span>
+          )}
         </div>
 
         {/* Title (2 lines clamp) in Arabic */}
