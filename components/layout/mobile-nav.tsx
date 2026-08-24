@@ -52,6 +52,19 @@ export function MobileNav({ open, onOpenChange, currentUser }: MobileNavProps) {
                 أقسام المنتجات
               </p>
               <ul className="space-y-1">
+                <li>
+                  <Link
+                    href="/products"
+                    onClick={() => onOpenChange(false)}
+                    className="flex items-center justify-between py-3 px-3.5 rounded-xl bg-surface-50 text-[#1E6091] font-bold text-xs transition-colors group"
+                  >
+                    <span>جميع المنتجات والتشكيلات</span>
+                    <ChevronLeft
+                      size={16}
+                      className="text-[#1E6091] transition-transform group-hover:-translate-x-1"
+                    />
+                  </Link>
+                </li>
                 {NAV_CATEGORIES.map((cat) => (
                   <li key={cat.slug}>
                     <Link

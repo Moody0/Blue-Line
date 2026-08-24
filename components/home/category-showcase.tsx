@@ -3,7 +3,9 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NAV_CATEGORIES } from "@/lib/constants";
 import type { Category } from "@/types/ecommerce";
 
 interface CategoryShowcaseProps {
@@ -23,8 +25,17 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
 
-  // Take top 4 categories for the grid showcase
-  const displayCategories = categories.slice(0, 4);
+  // Show all available categories (from backend DB or NAV_CATEGORIES fallback)
+  const displayCategories =
+    categories.length > 0
+      ? categories
+      : NAV_CATEGORIES.map((c, i) => ({
+          id: `cat-${i}`,
+          name_ar: c.nameAr,
+          name_en: c.nameEn,
+          slug: c.slug,
+          created_at: new Date().toISOString(),
+        }));
 
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
@@ -47,35 +58,48 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
   };
 
   return (
-    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 font-alexandria" dir="rtl">
-      {/* Centered Main Title */}
-      <div className="text-center space-y-2">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
-          تسوق حسب الفئة
-        </h2>
-        <p className="text-xs sm:text-sm font-semibold text-text-muted">
-          استكشف أرقى تشكيلات الأدوات الصحية والسباكة المعمارية الفاخرة
-        </p>
+    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 font-alexandria" dir="rtl">
+      {/* Header with Title & "View All Products" Link */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-2 border-b border-border-default/60 text-center sm:text-start">
+        <div className="space-y-1">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brand-900 tracking-tight">
+            تسوق حسب الفئة والأقسام
+          </h2>
+          <p className="text-xs sm:text-sm font-semibold text-text-muted">
+            استكشف أرقى تشكيلات الأدوات الصحية والسباكة المعمارية الفاخرة
+          </p>
+        </div>
+
+        <Link
+          href="/products"
+          className="inline-flex items-center gap-2 text-xs font-bold text-[#1E6091] hover:text-brand-900 bg-surface-50 hover:bg-surface-100 border border-border-default px-4 py-2 rounded-xl transition-all shadow-2xs group cursor-pointer"
+        >
+          <span>عرض جميع المنتجات والتشكيلات</span>
+          <ArrowLeft
+            size={14}
+            className="transition-transform group-hover:-translate-x-1 text-[#1E6091]"
+          />
+        </Link>
       </div>
 
-      {/* 4 Cards Container: 2-Columns Horizontal Carousel on Mobile & 4-Columns Grid on Desktop */}
+      {/* Categories Grid (Responsive: 6 columns on lg, 3 on md, 2 on mobile) */}
       <div className="relative">
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="flex lg:grid lg:grid-cols-4 gap-4 sm:gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory scroll-smooth no-scrollbar pb-2 items-center justify-items-center"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5"
         >
           {displayCategories.map((cat) => {
             const imageSrc =
               DEFAULT_CATEGORY_IMAGES[cat.slug] ||
-              cat.image_url ||
+              (cat as any).image_url ||
               "/images/categories/faucet.jpg";
 
             return (
               <Link
-                key={cat.id}
+                key={cat.id || cat.slug}
                 href={`/category/${cat.slug}`}
-                className="group relative block shrink-0 w-[calc(50%-0.5rem)] sm:w-[calc(50%-0.75rem)] lg:w-full max-w-[326px] h-[280px] sm:h-[350px] overflow-hidden bg-surface-100 shadow-xs transition-all duration-300 hover:shadow-elevated snap-start"
+                className="group relative block w-full h-[220px] sm:h-[260px] lg:h-[290px] overflow-hidden bg-surface-100 shadow-xs transition-all duration-300 hover:shadow-elevated rounded-xl border border-border-default/60"
               >
                 {/* High Resolution Category Image */}
                 <div className="relative w-full h-full overflow-hidden">
@@ -83,16 +107,16 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
                     src={imageSrc}
                     alt={cat.name_ar}
                     fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 326px"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300" />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300" />
                 </div>
 
-                {/* Bottom Centered Floating Button */}
-                <div className="absolute bottom-3 sm:bottom-4 inset-x-2 sm:inset-x-3 flex justify-center z-10">
-                  <div className="w-full max-w-[280px] py-2.5 sm:py-3.5 px-2 sm:px-4 text-center bg-white text-brand-900 shadow-md border border-black/5 group-hover:bg-[#1E6091] group-hover:text-white transition-all duration-300">
-                    <h3 className="text-xs sm:text-sm font-bold tracking-tight truncate">
+                {/* Bottom Floating Title Pill */}
+                <div className="absolute bottom-3 inset-x-2.5 flex justify-center z-10">
+                  <div className="w-full py-2 px-2 text-center bg-white/95 backdrop-blur-xs text-brand-900 shadow-sm border border-black/5 rounded-lg group-hover:bg-[#1E6091] group-hover:text-white transition-all duration-300">
+                    <h3 className="text-xs font-bold tracking-tight truncate">
                       {cat.name_ar}
                     </h3>
                   </div>
@@ -101,33 +125,12 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
             );
           })}
         </div>
-
-        {/* Mobile Carousel Indicators */}
-        <div className="flex lg:hidden items-center justify-center gap-3 pt-3">
-          <button
-            onClick={() => scrollToSlide(0)}
-            aria-label="الشريحة الأولى"
-            className={cn(
-              "h-2 rounded-full transition-all duration-300",
-              activeSlide === 0 ? "w-6 bg-[#1E6091]" : "w-2 bg-border-strong"
-            )}
-          />
-          <button
-            onClick={() => scrollToSlide(1)}
-            aria-label="الشريحة الثانية"
-            className={cn(
-              "h-2 rounded-full transition-all duration-300",
-              activeSlide === 1 ? "w-6 bg-[#1E6091]" : "w-2 bg-border-strong"
-            )}
-          />
-        </div>
       </div>
 
-      {/* Tier 2: 2 Full-Bleed Photographic Promotional Cards (Reference Design) */}
+      {/* Tier 2: 2 Full-Bleed Photographic Promotional Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-7 pt-4">
-        {/* Banner 1: Faucets (Full Container Photographic Background) */}
+        {/* Banner 1: Faucets */}
         <div className="relative rounded-none overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-[220px] sm:h-[250px] flex items-center group">
-          {/* Full Container Background Image */}
           <Image
             src="/images/promo/faucet-banner.jpg"
             alt="خلاطات المغاسل وأحواض الحمام"
@@ -135,11 +138,8 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
             sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover object-left-top sm:object-left transition-transform duration-700 ease-out group-hover:scale-105"
           />
-
-          {/* Soft Natural Directional Tint (Fading from text side to image focus) */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F4F1EA]/60 to-[#F4F1EA]/95" />
 
-          {/* Text Content Overlay on top of the image */}
           <div className="relative z-10 max-w-[65%] sm:max-w-[60%] p-6 sm:p-8 md:p-10 flex flex-col justify-center items-start text-start space-y-2.5">
             <span className="text-[11px] sm:text-xs font-semibold text-slate-700 tracking-wider uppercase">
               خصم ٢٥٪ حصري
@@ -158,9 +158,8 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
           </div>
         </div>
 
-        {/* Banner 2: Pressure Shower (Full Container Photographic Background) */}
+        {/* Banner 2: Pressure Shower */}
         <div className="relative rounded-none overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-[220px] sm:h-[250px] flex items-center group">
-          {/* Full Container Background Image */}
           <Image
             src="/images/promo/shower-banner.jpg"
             alt="سماعات الشاور والدش المطري"
@@ -168,11 +167,8 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
             sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover object-left-top sm:object-left transition-transform duration-700 ease-out group-hover:scale-105"
           />
-
-          {/* Soft Natural Directional Tint (Fading from text side to image focus) */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ECEEF0]/60 to-[#ECEEF0]/95" />
 
-          {/* Text Content Overlay on top of the image */}
           <div className="relative z-10 max-w-[65%] sm:max-w-[60%] p-6 sm:p-8 md:p-10 flex flex-col justify-center items-start text-start space-y-2.5">
             <span className="text-[11px] sm:text-xs font-semibold text-slate-700 tracking-wider uppercase">
               خصم ٢٠٪ لفترة محدودة
