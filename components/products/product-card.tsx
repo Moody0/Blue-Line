@@ -73,16 +73,20 @@ export function ProductCard({
   };
 
   if (viewMode === "list") {
+    const cleanDescription = (product.description_ar || "")
+      .replace(/<[^>]*>?/gm, "")
+      .trim();
+
     return (
       <article
         className={cn(
-          "group relative flex flex-col sm:flex-row items-stretch bg-white rounded-none border border-border-default/50 hover:border-[#1E6091]/40 hover:shadow-elevated transition-all duration-300 overflow-hidden font-alexandria",
+          "group relative flex flex-row items-stretch bg-white rounded-xl border border-border-default/60 hover:border-[#1E6091]/50 hover:shadow-md transition-all duration-300 overflow-hidden font-alexandria shadow-2xs",
           className
         )}
         dir="rtl"
       >
         {/* Product Image Box on Pure White */}
-        <div className="relative sm:w-64 shrink-0 aspect-square sm:aspect-auto bg-white overflow-hidden border-b sm:border-b-0 sm:border-e border-border-default/60 flex items-center justify-center p-2">
+        <div className="relative w-28 sm:w-44 md:w-56 shrink-0 bg-white overflow-hidden border-e border-border-default/60 flex items-center justify-center p-2">
           <Link
             href={`/product/${product.slug}`}
             className="relative block w-full h-full overflow-hidden"
@@ -93,8 +97,8 @@ export function ProductCard({
                 src={primaryImage}
                 alt={product.title_ar}
                 fill
-                sizes="(max-width: 640px) 100vw, 260px"
-                className="object-contain scale-110 transition-transform duration-500 ease-out group-hover:scale-118 p-1"
+                sizes="(max-width: 640px) 120px, 240px"
+                className="object-contain scale-105 transition-transform duration-500 ease-out group-hover:scale-115 p-1"
               />
             ) : (
               <ProductVisual
@@ -107,16 +111,17 @@ export function ProductCard({
 
           {/* Discount Badge on Top-Left */}
           {hasDiscount && (
-            <span className="absolute top-3 start-3 bg-[#1E6091] text-white text-[11px] font-bold px-2 py-0.5 z-10 shadow-2xs pointer-events-none">
+            <span className="absolute top-2 start-2 bg-[#1E6091] text-white text-[10px] sm:text-[11px] font-bold px-1.5 py-0.2 rounded-xs z-10 shadow-2xs pointer-events-none">
               -{discountPct}٪
             </span>
           )}
 
-          {/* Color Swatches on Bottom-Left if > 1 variant */}
+          {/* Color Swatches (Desktop only in list view to keep mobile clean) */}
           {variants.length > 1 && (
-            <div className="absolute bottom-3 start-3 flex items-center gap-1.5 z-20 pointer-events-auto bg-white/90 backdrop-blur-xs p-1 rounded-full border border-black/10 shadow-2xs">
-              {variants.map((v) => {
-                const isSelected = v.id === (activeVariant?.id ?? defaultVariant?.id);
+            <div className="hidden sm:flex absolute bottom-2 start-2 items-center gap-1 z-20 pointer-events-auto bg-white/90 backdrop-blur-xs p-1 rounded-full border border-black/10 shadow-2xs">
+              {variants.slice(0, 4).map((v) => {
+                const isSelected =
+                  v.id === (activeVariant?.id ?? defaultVariant?.id);
                 return (
                   <button
                     key={v.id}
@@ -130,7 +135,7 @@ export function ProductCard({
                     title={v.finish_name}
                     aria-label={v.finish_name}
                     className={cn(
-                      "w-3.5 h-3.5 rounded-full border border-black/25 transition-all cursor-pointer",
+                      "w-3 h-3 rounded-full border border-black/25 transition-all cursor-pointer",
                       isSelected
                         ? "ring-2 ring-[#1E6091] ring-offset-1 scale-110 shadow-xs"
                         : "opacity-75 hover:opacity-100 hover:scale-105"
@@ -142,33 +147,20 @@ export function ProductCard({
             </div>
           )}
 
-          {/* Floating Action Buttons on Hover */}
-          <div className="absolute top-3 end-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0 z-20">
+          {/* Quick Action Buttons (Desktop only on hover) */}
+          <div className="hidden sm:flex absolute top-2 end-2 flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0 z-20">
             <button
               type="button"
               onClick={toggleWishlist}
               aria-label="إضافة للمفضلة"
               className={cn(
-                "w-8 h-8 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center transition-all hover:scale-110 cursor-pointer",
+                "w-7 h-7 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center transition-all hover:scale-110 cursor-pointer",
                 isWishlisted
                   ? "text-destructive bg-destructive/10 border-destructive/30"
                   : "text-text-secondary hover:text-brand-900"
               )}
             >
-              <Heart size={15} className={isWishlisted ? "fill-current" : ""} />
-            </button>
-            <button
-              type="button"
-              onClick={handleQuickAdd}
-              aria-label="إضافة سريعة للسلة"
-              className={cn(
-                "w-8 h-8 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center transition-all hover:scale-110 cursor-pointer",
-                isJustAdded
-                  ? "bg-emerald-600 text-white border-emerald-600"
-                  : "text-text-secondary hover:text-brand-900"
-              )}
-            >
-              {isJustAdded ? <Check size={15} /> : <ShoppingBag size={15} />}
+              <Heart size={14} className={isWishlisted ? "fill-current" : ""} />
             </button>
             <button
               type="button"
@@ -178,23 +170,23 @@ export function ProductCard({
                 setQuickViewOpen(true);
               }}
               aria-label="معاينة سريعة للمنتج"
-              className="w-8 h-8 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center text-text-secondary hover:text-brand-900 transition-all hover:scale-110 cursor-pointer"
+              className="w-7 h-7 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center text-text-secondary hover:text-brand-900 transition-all hover:scale-110 cursor-pointer"
             >
-              <Eye size={15} />
+              <Eye size={14} />
             </button>
           </div>
         </div>
 
-        {/* Product Details */}
-        <div className="p-6 flex-1 flex flex-col justify-between space-y-4 text-start">
-          <div className="space-y-2">
+        {/* Product Details (Responsive & Compact on Mobile) */}
+        <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between space-y-2 text-start min-w-0">
+          <div className="space-y-1.5">
             {/* Rating & Trust Badges */}
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <div className="flex items-center gap-0.5 text-amber-400">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
-                    size={13}
+                    size={11}
                     className={cn(
                       "shrink-0",
                       star <= rating
@@ -207,11 +199,11 @@ export function ProductCard({
 
               {/* Trust Badge */}
               {product.is_featured || rating >= 4.9 ? (
-                <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-1.5 py-0.5 rounded-sm">
+                <span className="text-[9px] sm:text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-1.5 py-0.2 rounded-xs">
                   الأكثر طلباً ⭐
                 </span>
               ) : (
-                <span className="text-[10px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-sm">
+                <span className="text-[9px] sm:text-[10px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-1.5 py-0.2 rounded-xs">
                   ضمان معتمد 🛡️
                 </span>
               )}
@@ -219,26 +211,27 @@ export function ProductCard({
 
             {/* Title */}
             <Link href={`/product/${product.slug}`} className="block group/title">
-              <h3 className="text-sm sm:text-base font-bold text-brand-900 group-hover/title:text-[#1E6091] transition-colors leading-snug">
+              <h3 className="text-xs sm:text-base font-bold text-brand-900 group-hover/title:text-[#1E6091] transition-colors leading-snug line-clamp-2">
                 {product.title_ar}
               </h3>
             </Link>
 
-            {/* Description */}
-            <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed">
-              {product.description_ar ||
-                "خلاط فاخر بتصميم ألماني متميز مع طلاء فائق الجودة وضمان معتمد."}
-            </p>
+            {/* Clean Description without raw HTML tags (Hidden on very small mobile to maximize space) */}
+            {cleanDescription && (
+              <p className="hidden sm:block text-xs text-text-secondary line-clamp-2 leading-relaxed font-normal">
+                {cleanDescription}
+              </p>
+            )}
           </div>
 
           {/* Price Row & Add Button */}
-          <div className="pt-3 border-t border-border-default flex items-center justify-between gap-4">
-            <div className="flex items-baseline gap-2.5">
-              <span className="text-base sm:text-lg font-extrabold text-[#1E6091]">
+          <div className="pt-2 border-t border-border-default/60 flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-sm sm:text-base font-extrabold text-[#1E6091]">
                 {formatPrice(effectivePrice)}
               </span>
               {hasDiscount && (
-                <span className="text-xs text-text-muted line-through">
+                <span className="text-[10px] sm:text-xs text-text-muted line-through">
                   {formatPrice(originalPrice)}
                 </span>
               )}
@@ -247,10 +240,12 @@ export function ProductCard({
             <button
               type="button"
               onClick={handleQuickAdd}
-              className="h-10 px-5 bg-brand-900 hover:bg-[#1E6091] text-white text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+              className="h-8 sm:h-9 px-3 sm:px-4 bg-brand-900 hover:bg-[#1E6091] text-white text-[11px] sm:text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
-              {isJustAdded ? <Check size={15} /> : <ShoppingBag size={15} />}
-              <span>{isJustAdded ? "تمت الإضافة" : "إضافة للسلة"}</span>
+              {isJustAdded ? <Check size={14} /> : <ShoppingBag size={14} />}
+              <span className="hidden xs:inline">
+                {isJustAdded ? "تمت الإضافة" : "أضف للسلة"}
+              </span>
             </button>
           </div>
         </div>

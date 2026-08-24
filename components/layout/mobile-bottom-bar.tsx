@@ -12,7 +12,7 @@ export function MobileBottomBar() {
 
   const navItems = [
     { label: "الرئيسية", href: "/", icon: Home },
-    { label: "الأقسام", href: "/category/mixers-basins", icon: LayoutGrid },
+    { label: "كل المنتجات", href: "/products", icon: LayoutGrid },
     { label: "بحث", href: "/search", icon: Search },
     { label: "حسابي", href: "/account", icon: User },
   ];

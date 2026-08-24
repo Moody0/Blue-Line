@@ -3,11 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, ShoppingBag, Menu, User, Heart } from "lucide-react";
+import { Search, ShoppingBag, Menu, User, Heart, LayoutGrid } from "lucide-react";
 import { Logo } from "./logo";
 import { MobileNav } from "./mobile-nav";
 import { LiveSearchModal } from "./live-search-modal";
-import { NAV_CATEGORIES } from "@/lib/constants";
 import { useCart } from "@/components/cart/cart-context";
 import { useFavorites } from "@/components/favorites/favorites-context";
 import { createClient } from "@/lib/supabase/client";
@@ -17,6 +16,14 @@ interface NavbarProps {
   cartItemCount?: number;
   onOpenCart?: () => void;
 }
+
+const MAIN_PAGES = [
+  { nameAr: "الرئيسية", href: "/" },
+  { nameAr: "جميع المنتجات", href: "/products" },
+  { nameAr: "الضمان المعتمد", href: "/warranty" },
+  { nameAr: "تتبع طلبك", href: "/track-order" },
+  { nameAr: "الاستبدال والاسترجاع", href: "/returns" },
+];
 
 export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -83,38 +90,32 @@ export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
         <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* ── 1. Right side (in RTL): Brand Logo ── */}
-            <div className="flex items-center shrink-0">
+            <div className="flex items-center gap-3 shrink-0">
               <Logo />
             </div>
 
-            {/* ── 2. Center: Clean Navigation Links Matching Reference ── */}
-            <nav className="hidden lg:flex items-center gap-7 xl:gap-8 mx-auto">
-              <Link
-                href="/"
-                className={cn(
-                  "relative text-xs xl:text-sm font-bold transition-colors py-2 group",
-                  pathname === "/"
-                    ? "text-[#1E6091]"
-                    : "text-text-secondary hover:text-brand-900"
-                )}
+            {/* ── 2. Center (Desktop Only): Main Essential Pages Navigation ── */}
+            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 mx-auto">
+              {/* Category Drawer Trigger Button */}
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen(true)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-50 hover:bg-surface-100 text-[#1E6091] font-bold text-xs xl:text-sm transition-colors border border-border-default/80 cursor-pointer shadow-2xs group"
               >
-                <span>الرئيسية</span>
-                <span
-                  className={cn(
-                    "absolute bottom-0 inset-x-0 h-0.5 bg-[#1E6091] transition-transform duration-300 ease-out",
-                    pathname === "/"
-                      ? "scale-x-100"
-                      : "scale-x-0 origin-bottom-left group-hover:scale-x-100 group-hover:origin-bottom-right"
-                  )}
-                />
-              </Link>
+                <LayoutGrid size={15} className="group-hover:rotate-90 transition-transform duration-300" />
+                <span>أقسام المتجر</span>
+              </button>
 
-              {NAV_CATEGORIES.map((category) => {
-                const isActive = pathname.startsWith(`/category/${category.slug}`);
+              {MAIN_PAGES.map((page) => {
+                const isActive =
+                  page.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(page.href);
+
                 return (
                   <Link
-                    key={category.slug}
-                    href={`/category/${category.slug}`}
+                    key={page.href}
+                    href={page.href}
                     className={cn(
                       "relative text-xs xl:text-sm font-bold transition-colors py-2 group",
                       isActive
@@ -122,7 +123,7 @@ export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
                         : "text-text-secondary hover:text-brand-900"
                     )}
                   >
-                    <span>{category.nameAr}</span>
+                    <span>{page.nameAr}</span>
                     <span
                       className={cn(
                         "absolute bottom-0 inset-x-0 h-0.5 bg-[#1E6091] transition-transform duration-300 ease-out",
@@ -136,47 +137,47 @@ export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
               })}
             </nav>
 
-            {/* ── 3. Left side (in RTL): Utility Icons (Search, Account, Wishlist, Cart) ── */}
-            <div className="flex items-center gap-1.5 sm:gap-3">
-              {/* Live Search Trigger Button */}
+            {/* ── 3. Left side: Utility Icons & Mobile Category Menu ── */}
+            <div className="flex items-center gap-1.5 sm:gap-2.5">
+              {/* Live Search Trigger (Desktop only - mobile has it in Bottom Bar) */}
               <button
                 type="button"
                 onClick={() => setSearchModalOpen(true)}
-                className="p-2 text-text-secondary hover:text-brand-900 hover:bg-surface-100 rounded-full transition-colors cursor-pointer"
+                className="hidden md:flex p-2 text-text-secondary hover:text-brand-900 hover:bg-surface-100 rounded-full transition-colors cursor-pointer"
                 aria-label="بحث في المنتجات"
               >
                 <Search size={20} />
               </button>
 
-              {/* Customer Account Indicator */}
+              {/* Customer Account (Desktop only - mobile has it in Bottom Bar) */}
               {currentUser ? (
                 <Link
                   href="/account"
-                  className="flex items-center gap-2 py-1 px-2.5 sm:px-3 sm:py-1.5 rounded-full bg-surface-100 hover:bg-surface-200 text-brand-900 transition-all border border-border-default/70 group"
+                  className="hidden md:flex items-center gap-2 py-1 px-2.5 sm:px-3 sm:py-1.5 rounded-full bg-surface-100 hover:bg-surface-200 text-brand-900 transition-all border border-border-default/70 group"
                   aria-label={`حساب ${currentUser.name}`}
                 >
                   <div className="relative w-6 h-6 rounded-full bg-[#1E6091] text-white flex items-center justify-center text-[11px] font-black shrink-0">
                     {currentUser.name.charAt(0).toUpperCase()}
                     <span className="absolute -bottom-0.5 -start-0.5 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white" />
                   </div>
-                  <span className="hidden md:inline-block font-bold text-xs text-brand-900 truncate max-w-[110px]">
+                  <span className="font-bold text-xs text-brand-900 truncate max-w-[110px]">
                     {currentUser.name}
                   </span>
                 </Link>
               ) : (
                 <Link
                   href="/auth/login"
-                  className="p-2 text-text-secondary hover:text-brand-900 hover:bg-surface-100 rounded-full transition-colors hidden sm:inline-flex"
+                  className="hidden md:inline-flex p-2 text-text-secondary hover:text-brand-900 hover:bg-surface-100 rounded-full transition-colors"
                   aria-label="تسجيل الدخول"
                 >
                   <User size={20} />
                 </Link>
               )}
 
-              {/* Favorites Link with Live Count */}
+              {/* Favorites Link with Live Count (Visible on all screens) */}
               <Link
                 href="/favorites"
-                className="relative p-2 text-text-secondary hover:text-brand-900 hover:bg-surface-100 rounded-full transition-colors hidden sm:inline-flex"
+                className="relative p-2 text-text-secondary hover:text-brand-900 hover:bg-surface-100 rounded-full transition-colors inline-flex"
                 aria-label="المفضلة"
               >
                 <Heart
@@ -190,11 +191,11 @@ export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
                 )}
               </Link>
 
-              {/* Slide-over Cart Trigger with Live Badge */}
+              {/* Cart Button (Desktop only - mobile has it in Bottom Bar) */}
               <button
                 type="button"
                 onClick={handleOpenCart}
-                className="relative p-2 text-brand-900 hover:bg-surface-100 rounded-full transition-colors flex items-center justify-center cursor-pointer"
+                className="hidden md:flex relative p-2 text-brand-900 hover:bg-surface-100 rounded-full transition-colors items-center justify-center cursor-pointer"
                 aria-label="سلة المشتريات"
               >
                 <ShoppingBag size={20} />
@@ -203,12 +204,12 @@ export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
                 </span>
               </button>
 
-              {/* Mobile Menu Hamburger Button */}
+              {/* Mobile Hamburger Button (Opens all categories & deep links) */}
               <button
                 type="button"
                 onClick={() => setMobileNavOpen(true)}
-                className="lg:hidden p-2 text-brand-900 hover:bg-surface-100 rounded-full transition-colors cursor-pointer"
-                aria-label="فتح القائمة الرئيسية"
+                className="p-2 text-brand-900 hover:bg-surface-100 rounded-full transition-colors cursor-pointer"
+                aria-label="فتح قائمة الأقسام والتصنيفات"
               >
                 <Menu size={22} />
               </button>
@@ -223,7 +224,7 @@ export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
         onClose={() => setSearchModalOpen(false)}
       />
 
-      {/* ── Mobile Navigation Drawer ── */}
+      {/* ── All Categories & Navigation Drawer ── */}
       <MobileNav
         open={mobileNavOpen}
         onOpenChange={setMobileNavOpen}
