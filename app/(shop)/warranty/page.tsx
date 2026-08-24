@@ -1,0 +1,93 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { MessageCircle, ArrowLeft, ShieldCheck } from "lucide-react";
+import { getSiteSettings } from "@/actions/settings";
+
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "الضمان والصيانة | بلو لاين لأدوات السباكة",
+  description: "شروط وتفاصيل الضمان والصيانة المعتمدة للأدوات الصحية وخلاطات ومستلزمات السباكة من متجر بلو لاين.",
+};
+
+export default async function WarrantyPage() {
+  const settings = await getSiteSettings();
+  const warranty = settings.warranty_content || {
+    titleAr: "الضمان وخدمات ما بعد البيع",
+    subtitleAr: "كافة خلاطات المياه والأدوات الصحية ومستلزمات السباكة المعتمدة لدى بلو لاين أصلية ومشمولة بضمان رسمي معتمد ضد عيوب الصناعة والتسريب.",
+    durationAr: "من سنتين وحتى ٥ سنوات ضمان معتمد",
+    sections: [],
+  };
+  const contact = settings.store_contact || {
+    phoneDisplay: "+20 100 000 0000",
+    whatsapp: "201000000000",
+  };
+
+  return (
+    <div className="min-h-[70vh] py-8 sm:py-14 font-alexandria" dir="rtl">
+      <div className="max-w-[1000px] mx-auto px-4 sm:px-6 space-y-8 text-start">
+        {/* Breadcrumb Navigation */}
+        <nav aria-label="مسار التصفح" className="flex items-center gap-2 text-xs text-text-muted">
+          <Link href="/" className="hover:text-brand-900 transition-colors">
+            الرئيسية
+          </Link>
+          <span>/</span>
+          <span className="text-brand-900 font-bold">الضمان والصيانة</span>
+        </nav>
+
+        {/* Page Header */}
+        <div className="space-y-3 pb-6 border-b border-border-default">
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 rounded-xl bg-blue-50 text-[#1E6091] border border-blue-200/60 text-xs font-bold flex items-center gap-1.5">
+              <ShieldCheck size={14} />
+              <span>{warranty.durationAr}</span>
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+            {warranty.titleAr}
+          </h1>
+          <p className="text-xs sm:text-sm text-text-secondary leading-relaxed max-w-2xl">
+            {warranty.subtitleAr}
+          </p>
+        </div>
+
+        {/* Dynamic Sections */}
+        <div className="space-y-8 text-xs sm:text-sm text-text-secondary leading-relaxed">
+          {warranty.sections?.map((sec, idx) => (
+            <section key={idx} className="space-y-2.5">
+              <h2 className="text-base font-bold text-brand-900">
+                {sec.title}
+              </h2>
+              <div className="whitespace-pre-line text-text-muted leading-relaxed">
+                {sec.content}
+              </div>
+            </section>
+          ))}
+        </div>
+
+        {/* Action Footer */}
+        <div className="pt-6 border-t border-border-default flex flex-wrap items-center gap-4">
+          <a
+            href={`https://wa.me/${contact.whatsapp}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-900 hover:bg-[#1E6091] text-white text-xs font-bold transition-colors"
+          >
+            <MessageCircle size={15} />
+            <span className="inline-flex items-center gap-1">
+              <span>تواصل مع الدعم الفني عبر واتساب</span>
+              <span dir="ltr" className="font-mono">({contact.phoneDisplay})</span>
+            </span>
+          </a>
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-surface-100 hover:bg-surface-200 text-brand-900 text-xs font-bold transition-colors"
+          >
+            <span>تصفح المنتجات</span>
+            <ArrowLeft size={14} />
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

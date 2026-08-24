@@ -1,0 +1,165 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================
+   Blue Line — Design System & Tokens (Tailwind v4)
+   ============================================ */
+@theme inline {
+  /* ── Fonts ── */
+  --font-alexandria: var(--font-alexandria), "Alexandria", sans-serif;
+  --font-plus-jakarta: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
+  --font-sans: var(--font-alexandria), "Alexandria", sans-serif;
+
+  /* ── Brand Primary (Deep Sapphire / Navy) ── */
+  --color-brand-900: #0B2545;
+  --color-brand-800: #134074;
+  --color-brand-700: #13315C;
+  --color-brand-600: #1B3A5C;
+
+  /* ── Brand Accent (Vibrant Cyan / Sky Line) ── */
+  --color-accent-600: #0077B6;
+  --color-accent-500: #0096C7;
+  --color-accent-400: #00B4D8;
+  --color-accent-300: #48CAE4;
+
+  /* ── Surfaces ── */
+  --color-surface-white: #FFFFFF;
+  --color-surface-50: #F8FAFC;
+  --color-surface-100: #F1F5F9;
+  --color-surface-200: #E2E8F0;
+
+  /* ── Text ── */
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748B;
+  --color-text-inverse: #FFFFFF;
+
+  /* ── Borders & Accents ── */
+  --color-border-default: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-discount: #DC2626;
+
+  /* ── Shadows ── */
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-drawer: -4px 0 25px -5px rgba(0, 0, 0, 0.12);
+
+  /* ── shadcn variables ── */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #0B2545;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0B2545;
+  --muted: #F8FAFC;
+  --muted-foreground: #64748B;
+  --accent: #0077B6;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #0077B6;
+  --radius: 0.5rem;
+}
+
+/* ============================================
+   Base Layer — Resets & Typography
+   ============================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-alexandria), sans-serif;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-white);
+  line-height: 1.6;
+}
+
+/* ── RTL Support ── */
+[dir="rtl"] {
+  text-align: right;
+  font-family: var(--font-alexandria), sans-serif;
+}
+
+[dir="ltr"] {
+  text-align: left;
+  font-family: var(--font-plus-jakarta), sans-serif;
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* ── Text Selection ── */
+::selection {
+  background-color: #0077B6;
+  color: #FFFFFF;
+}
+
+/* ── Performance Optimization Utilities ── */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 480px;
+}
+
+/* Prevent layout shifts on responsive image containers */
+.aspect-square,
+.aspect-\[1\/1\] {
+  contain: paint;
+}
