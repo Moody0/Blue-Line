@@ -123,29 +123,28 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
         </div>
       </div>
 
-      {/* Tier 2: 2 Wide Editorial Promotional Banners (Matching Exact Reference Design) */}
+      {/* Tier 2: 2 Full-Bleed Photographic Promotional Cards (Reference Design) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-7 pt-4">
-        {/* Banner 1: Faucets (Warm Neutral Background) */}
-        <div className="relative bg-[#F4F1EA] rounded-none overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-[220px] sm:h-[240px] flex items-center group">
-          {/* Image Container on Left in RTL (End side) with seamless gradient */}
-          <div className="absolute end-0 top-0 bottom-0 w-[50%] sm:w-[48%] overflow-hidden z-0 pointer-events-none">
-            <Image
-              src="/images/promo/faucet-banner.jpg"
-              alt="خلاطات المغاسل وأحواض الحمام"
-              fill
-              sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-            />
-            {/* Smooth gradient blend into #F4F1EA */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F4F1EA]/50 to-[#F4F1EA]" />
-          </div>
+        {/* Banner 1: Faucets (Full Container Photographic Background) */}
+        <div className="relative rounded-none overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-[220px] sm:h-[250px] flex items-center group">
+          {/* Full Container Background Image */}
+          <Image
+            src="/images/promo/faucet-banner.jpg"
+            alt="خلاطات المغاسل وأحواض الحمام"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover object-left-top sm:object-left transition-transform duration-700 ease-out group-hover:scale-105"
+          />
 
-          {/* Text Content Container (Start side in RTL) */}
-          <div className="relative z-10 w-[58%] sm:w-[54%] p-6 sm:p-8 flex flex-col justify-center items-start text-start space-y-2.5">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-600 tracking-wider uppercase">
+          {/* Soft Natural Directional Tint (Fading from text side to image focus) */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F4F1EA]/60 to-[#F4F1EA]/95" />
+
+          {/* Text Content Overlay on top of the image */}
+          <div className="relative z-10 max-w-[65%] sm:max-w-[60%] p-6 sm:p-8 md:p-10 flex flex-col justify-center items-start text-start space-y-2.5">
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-700 tracking-wider uppercase">
               خصم ٢٥٪ حصري
             </span>
-            <h3 className="text-xl sm:text-2xl font-bold text-[#0B192C] leading-snug tracking-tight">
+            <h3 className="text-xl sm:text-2xl lg:text-[25px] font-extrabold text-[#0B192C] leading-snug tracking-tight">
               خلاطات المغاسل وأحواض الحمام
             </h3>
             <div className="pt-2">
@@ -159,27 +158,26 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
           </div>
         </div>
 
-        {/* Banner 2: Pressure Shower (Cool Crisp Neutral Background) */}
-        <div className="relative bg-[#ECEEF0] rounded-none overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-[220px] sm:h-[240px] flex items-center group">
-          {/* Image Container on Left in RTL (End side) with seamless gradient */}
-          <div className="absolute end-0 top-0 bottom-0 w-[50%] sm:w-[48%] overflow-hidden z-0 pointer-events-none">
-            <Image
-              src="/images/promo/shower-banner.jpg"
-              alt="سماعات الشاور والدش المطري"
-              fill
-              sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-            />
-            {/* Smooth gradient blend into #ECEEF0 */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ECEEF0]/50 to-[#ECEEF0]" />
-          </div>
+        {/* Banner 2: Pressure Shower (Full Container Photographic Background) */}
+        <div className="relative rounded-none overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-[220px] sm:h-[250px] flex items-center group">
+          {/* Full Container Background Image */}
+          <Image
+            src="/images/promo/shower-banner.jpg"
+            alt="سماعات الشاور والدش المطري"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover object-left-top sm:object-left transition-transform duration-700 ease-out group-hover:scale-105"
+          />
 
-          {/* Text Content Container (Start side in RTL) */}
-          <div className="relative z-10 w-[58%] sm:w-[54%] p-6 sm:p-8 flex flex-col justify-center items-start text-start space-y-2.5">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-600 tracking-wider uppercase">
+          {/* Soft Natural Directional Tint (Fading from text side to image focus) */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ECEEF0]/60 to-[#ECEEF0]/95" />
+
+          {/* Text Content Overlay on top of the image */}
+          <div className="relative z-10 max-w-[65%] sm:max-w-[60%] p-6 sm:p-8 md:p-10 flex flex-col justify-center items-start text-start space-y-2.5">
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-700 tracking-wider uppercase">
               خصم ٢٠٪ لفترة محدودة
             </span>
-            <h3 className="text-xl sm:text-2xl font-bold text-[#0B192C] leading-snug tracking-tight">
+            <h3 className="text-xl sm:text-2xl lg:text-[25px] font-extrabold text-[#0B192C] leading-snug tracking-tight">
               سماعات الشاور والدش المطري
             </h3>
             <div className="pt-2">
