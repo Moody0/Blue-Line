@@ -365,7 +365,7 @@ export function FilterSidebar({
         </button>
 
         {openSections.color && (
-          <div className="pt-1 flex flex-wrap gap-2">
+          <div className="p-1.5 flex flex-wrap gap-2.5 items-center">
             {availableColors.map((color) => {
               const isSelected = filterState.selectedColors?.includes(color.hex);
               return (
@@ -376,9 +376,9 @@ export function FilterSidebar({
                   title={color.nameAr}
                   aria-label={color.nameAr}
                   className={cn(
-                    "w-7 h-7 rounded-full border border-black/20 flex items-center justify-center transition-all cursor-pointer",
+                    "relative w-7 h-7 rounded-full border border-black/20 flex items-center justify-center transition-all cursor-pointer shrink-0",
                     isSelected
-                      ? "ring-2 ring-[#1E6091] ring-offset-2 scale-110 shadow-sm"
+                      ? "ring-2 ring-[#1E6091] ring-offset-2 ring-offset-white shadow-sm"
                       : "hover:scale-105 opacity-85 hover:opacity-100"
                   )}
                   style={{ backgroundColor: color.hex }}
