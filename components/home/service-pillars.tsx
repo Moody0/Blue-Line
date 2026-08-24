@@ -56,7 +56,7 @@ export function ServicePillars({ pillars }: ServicePillarsProps) {
   const currentPillars = pillars && pillars.length > 0 ? pillars : DEFAULT_PILLARS;
 
   return (
-    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 cv-auto">
+    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 cv-auto font-alexandria" dir="rtl">
       {/* Section Title */}
       <div className="text-center space-y-2">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
@@ -77,18 +77,18 @@ export function ServicePillars({ pillars }: ServicePillarsProps) {
               key={pillar.id || idx}
               className="group flex flex-col items-center text-center space-y-4 max-w-[260px] cursor-pointer"
             >
-              {/* Circular Badge */}
-              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-[#ECEFF2] group-hover:bg-[#1E6091] group-hover:scale-105 flex items-center justify-center transition-all duration-300 shadow-2xs group-hover:shadow-md">
+              {/* Circular Badge with Instant Color Change and No Scale Growth */}
+              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-[#ECEFF2] group-hover:bg-[#1E6091] flex items-center justify-center shadow-2xs">
                 <Icon
                   size={46}
                   strokeWidth={1.4}
-                  className="text-[#1E6091] group-hover:text-white transition-colors duration-300"
+                  className="text-[#1E6091] group-hover:text-white"
                 />
               </div>
 
               {/* Title & Description */}
               <div className="space-y-1.5">
-                <h3 className="text-sm sm:text-base font-bold text-brand-900 group-hover:text-[#1E6091] transition-colors leading-snug">
+                <h3 className="text-sm sm:text-base font-bold text-brand-900 group-hover:text-[#1E6091] leading-snug">
                   {pillar.titleAr}
                 </h3>
                 <p className="text-xs text-text-secondary leading-relaxed font-normal">
