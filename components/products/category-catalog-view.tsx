@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   LayoutGrid,
@@ -8,9 +8,8 @@ import {
   SlidersHorizontal,
   X,
   RotateCcw,
-  Sparkles,
-  ChevronDown,
   CheckCircle2,
+  Loader2,
 } from "lucide-react";
 import { FilterSidebar, type FilterState } from "./filter-sidebar";
 import { ProductCard } from "./product-card";
@@ -49,11 +48,13 @@ export function CategoryCatalogView({
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(INITIAL_PAGE_SIZE);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [sortBy, setSortBy] = useState<
     "best_selling" | "price_asc" | "price_desc" | "discount" | "newest"
   >("best_selling");
 
   const [filterState, setFilterState] = useState<FilterState>({});
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Reset pagination when filters or sort change
   useEffect(() => {
@@ -186,14 +187,31 @@ export function CategoryCatalogView({
   // Paginated slice
   const displayedProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProducts.length;
-  const progressPct = Math.min(
-    100,
-    Math.round((displayedProducts.length / (filteredProducts.length || 1)) * 100)
-  );
 
-  const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + INITIAL_PAGE_SIZE);
-  };
+  // Infinite Scroll Observer: auto loads whenever user scrolls near bottom
+  useEffect(() => {
+    if (!hasMore || isLoadingMore) return;
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setIsLoadingMore(true);
+          setTimeout(() => {
+            setVisibleCount((prev) => prev + INITIAL_PAGE_SIZE);
+            setIsLoadingMore(false);
+          }, 200);
+        }
+      },
+      {
+        rootMargin: "350px", // Trigger 350px before reaching the exact bottom
+      }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, displayedProducts.length]);
 
   // Determine active filter badges
   const hasActiveFilters =
@@ -298,7 +316,7 @@ export function CategoryCatalogView({
         </div>
       </div>
 
-      {/* Feature 1: Active Filter Chips Bar */}
+      {/* Active Filter Chips Bar */}
       {hasActiveFilters && (
         <div className="flex flex-wrap items-center gap-2 p-3 bg-surface-50/80 rounded-xl border border-border-default/70 animate-in fade-in duration-200">
           <span className="text-xs font-bold text-text-muted ps-1">
@@ -396,7 +414,7 @@ export function CategoryCatalogView({
         />
 
         {/* Product Listing Area */}
-        <div className="flex-1 w-full min-w-0 space-y-10">
+        <div className="flex-1 w-full min-w-0 space-y-8">
           {filteredProducts.length === 0 ? (
             <div className="py-20 text-center space-y-4 bg-[#F8FAFC] border border-border-default/60 rounded-2xl p-8">
               <h3 className="text-lg font-bold text-brand-900">
@@ -439,50 +457,28 @@ export function CategoryCatalogView({
                 </div>
               )}
 
-              {/* Feature 2: Progressive Load More & Visual Progress Bar */}
-              {filteredProducts.length > INITIAL_PAGE_SIZE && (
-                <div className="pt-8 pb-4 flex flex-col items-center justify-center space-y-4 border-t border-border-default/70">
-                  {/* Progress Text */}
-                  <p className="text-xs font-medium text-text-muted">
-                    تم عرض{" "}
-                    <span className="font-bold text-brand-900 font-mono">
-                      {displayedProducts.length}
-                    </span>{" "}
-                    من أصل{" "}
-                    <span className="font-bold text-brand-900 font-mono">
-                      {filteredProducts.length}
-                    </span>{" "}
-                    منتج متوفر
-                  </p>
-
-                  {/* Slim Luxury Progress Bar */}
-                  <div className="w-full max-w-xs h-1.5 bg-surface-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#1E6091] rounded-full transition-all duration-500 ease-out"
-                      style={{ width: `${progressPct}%` }}
-                    />
+              {/* Infinite Scroll Loader / End Indicator */}
+              {hasMore ? (
+                <div
+                  ref={sentinelRef}
+                  className="pt-8 pb-6 flex flex-col items-center justify-center space-y-3"
+                >
+                  <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-surface-50 border border-border-default rounded-full text-xs font-medium text-text-secondary shadow-2xs">
+                    <Loader2 size={15} className="animate-spin text-[#1E6091]" />
+                    <span>جاري تحميل المزيد من التشكيلات...</span>
                   </div>
-
-                  {/* Load More Button */}
-                  {hasMore ? (
-                    <button
-                      type="button"
-                      onClick={handleLoadMore}
-                      className="mt-2 inline-flex items-center justify-center gap-2 px-8 py-3 bg-white hover:bg-surface-50 text-brand-900 font-bold text-xs uppercase tracking-wider rounded-xl border border-border-strong hover:border-[#1E6091] shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
-                    >
-                      <span>عرض المزيد من المنتجات</span>
-                      <ChevronDown
-                        size={15}
-                        className="text-[#1E6091] group-hover:translate-y-0.5 transition-transform"
-                      />
-                    </button>
-                  ) : (
-                    <div className="inline-flex items-center gap-1.5 text-xs text-text-muted font-medium pt-1">
-                      <CheckCircle2 size={14} className="text-emerald-600" />
-                      <span>تم عرض كافة التشكيلات المتوفرة</span>
-                    </div>
-                  )}
                 </div>
+              ) : (
+                filteredProducts.length > INITIAL_PAGE_SIZE && (
+                  <div className="pt-10 pb-4 flex flex-col items-center justify-center space-y-2 border-t border-border-default/70">
+                    <div className="inline-flex items-center gap-2 text-xs text-text-muted font-medium">
+                      <CheckCircle2 size={15} className="text-emerald-600" />
+                      <span>
+                        تم عرض كافة التشكيلات المتوفرة ({filteredProducts.length} منتج)
+                      </span>
+                    </div>
+                  </div>
+                )
               )}
             </>
           )}
