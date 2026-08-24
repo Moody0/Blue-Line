@@ -22,6 +22,7 @@ import {
   Tag,
   Check,
   X,
+  ChevronDown,
 } from "lucide-react";
 import { useCart } from "./cart-context";
 import { formatPrice } from "@/lib/formatters";
@@ -40,12 +41,19 @@ export function CheckoutView() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: "",
+    country: "مصر",
+    firstName: "",
+    lastName: "",
+    address: "", // رقم المنزل واسم الشارع / الحي
+    city: "", // المدينة
+    governorate: "القاهرة", // المنطقة
     phone: "",
     email: "",
-    governorate: "القاهرة",
-    city: "",
-    address: "",
+    createAccount: false,
+    shipToDifferentAddress: false,
+    diffRecipientName: "",
+    diffAddress: "",
+    diffGovernorate: "القاهرة",
     notes: "",
     paymentMethod: "cod" as "cod" | "instapay",
   });
@@ -67,9 +75,13 @@ export function CheckoutView() {
         setIsAuthenticated(true);
         const customer = await getCustomerProfile();
         if (customer) {
+          const names = (customer.full_name || "").split(" ");
+          const first = names[0] || "";
+          const last = names.slice(1).join(" ") || "";
           setFormData((prev) => ({
             ...prev,
-            fullName: customer.full_name || prev.fullName,
+            firstName: first || prev.firstName,
+            lastName: last || prev.lastName,
             email: customer.email || prev.email,
             phone: customer.phone || prev.phone,
             governorate: customer.governorate || prev.governorate,
@@ -158,33 +170,48 @@ export function CheckoutView() {
     setErrorMessage(null);
 
     // Validation checks
-    if (!formData.fullName.trim() || formData.fullName.trim().length < 2) {
-      setErrorMessage("يرجى إدخال الاسم بالكامل بشكل صحيح.");
+    if (!formData.firstName.trim()) {
+      setErrorMessage("يرجى إدخال الاسم الأول.");
+      return;
+    }
+
+    if (!formData.lastName.trim()) {
+      setErrorMessage("يرجى إدخال الاسم الأخير.");
+      return;
+    }
+
+    if (!formData.address.trim() || formData.address.trim().length < 4) {
+      setErrorMessage("يرجى إدخال عنوان الشارع / الحي (رقم المنزل واسم الشارع).");
+      return;
+    }
+
+    if (!formData.city.trim()) {
+      setErrorMessage("يرجى إدخال اسم المدينة.");
       return;
     }
 
     if (!formData.phone.trim() || !isValidPhoneNumber(formData.phone.trim())) {
-      setErrorMessage("رقم الهاتف غير صحيح، يرجى إدخال رقم هاتف صالح.");
+      setErrorMessage("رقم الهاتف غير صحيح، يرجى إدخال رقم هاتف محمول صالح.");
       return;
     }
 
-    if (formData.email.trim() && !isValidEmail(formData.email.trim())) {
+    if (!formData.email.trim() || !isValidEmail(formData.email.trim())) {
       setErrorMessage("البريد الإلكتروني غير صحيح، يرجى إدخال بريد إلكتروني صالح.");
       return;
     }
 
-    if (!formData.address.trim() || formData.address.trim().length < 5) {
-      setErrorMessage("يرجى إدخال تفاصيل العنوان (الشارع، رقم العمارة / الشقة).");
-      return;
-    }
+    const fullCustomerName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
+    const deliveryAddress = formData.shipToDifferentAddress && formData.diffAddress.trim()
+      ? `${formData.diffGovernorate} — ${formData.diffAddress.trim()} (المستلم: ${formData.diffRecipientName.trim() || fullCustomerName})`
+      : `${formData.governorate} — ${formData.city.trim()}، ${formData.address.trim()}`;
 
     startTransition(async () => {
       const result = await createOrder({
-        fullName: formData.fullName.trim(),
+        fullName: fullCustomerName,
         phone: formData.phone.trim(),
-        email: formData.email.trim() || `${formData.phone.trim()}@guest.blueline-eg.com`,
+        email: formData.email.trim(),
         governorate: formData.governorate,
-        city: formData.city.trim() || formData.governorate,
+        city: formData.city.trim(),
         address: formData.address.trim(),
         notes: formData.notes.trim() || undefined,
         paymentMethod: formData.paymentMethod,
@@ -229,15 +256,6 @@ export function CheckoutView() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         {/* ── Left Column: Checkout Form (7 cols) ── */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="space-y-1 text-start">
-            <h1 className="text-2xl font-extrabold text-brand-900 tracking-tight">
-              إتمام الطلب وتأكيد الشحن
-            </h1>
-            <p className="text-xs text-text-muted">
-              أدخل بيانات التوصيل واختر طريقة الدفع المناسبة لتأكيد حجز الموديلات
-            </p>
-          </div>
-
           {/* Error Alert */}
           {errorMessage && (
             <div className="p-4 rounded-2xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-bold leading-relaxed flex items-center gap-2 animate-in fade-in duration-200">
@@ -247,158 +265,258 @@ export function CheckoutView() {
           )}
 
           <form id="checkout-form" onSubmit={handleSubmit} className="space-y-6">
-            {/* Section 1: Customer Contact Info */}
-            <div className="bg-white rounded-2xl border border-border-default/90 p-5 sm:p-6 space-y-4 shadow-xs">
-              <h2 className="text-sm font-extrabold text-brand-900 flex items-center gap-2 border-b border-border-default/60 pb-3">
-                <User size={16} className="text-[#1E6091]" />
-                <span>1. البيانات الشخصية وبيانات الاتصال</span>
+            {/* Section: تفاصيل الفاتورة (Billing Details Form Matching Reference) */}
+            <div className="bg-white rounded-2xl border border-border-default/90 p-6 sm:p-8 space-y-5 shadow-xs text-start">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-brand-900 tracking-tight pb-2 border-b border-border-default/60">
+                تفاصيل الفاتورة
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Full Name */}
-                <div className="space-y-1 text-start">
-                  <label className="text-[11px] font-bold text-text-primary block">
-                    الاسم بالكامل <span className="text-destructive">*</span>
+              <div className="space-y-4">
+                {/* 1. الدولة / المنطقة * */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-brand-900 block">
+                    الدولة / المنطقة <span className="text-red-500 font-bold">*</span>
                   </label>
-                  <div className="relative flex items-center">
-                    <User
-                      size={15}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+                  <div className="relative">
+                    <select
+                      disabled
+                      value={formData.country}
+                      className="w-full h-11 px-3.5 rounded-xl bg-surface-50 border border-border-default text-xs font-bold text-brand-900 outline-none appearance-none cursor-not-allowed opacity-90"
+                    >
+                      <option value="مصر">مصر</option>
+                    </select>
+                    <ChevronDown
+                      size={16}
+                      className="absolute start-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
                     />
+                  </div>
+                </div>
+
+                {/* 2. الاسم الأول * & الاسم الأخير * (Grid 2 cols) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* First Name */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-brand-900 block">
+                      الاسم الأول <span className="text-red-500 font-bold">*</span>
+                    </label>
                     <input
                       type="text"
                       required
-                      placeholder="مثال: كريم الشناوي"
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      className="w-full h-11 pr-10 pl-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none"
+                      placeholder=""
+                      value={formData.firstName}
+                      onChange={(e) =>
+                        setFormData({ ...formData, firstName: e.target.value })
+                      }
+                      className="w-full h-11 px-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none"
                     />
                   </div>
-                </div>
 
-                {/* Phone */}
-                <div className="space-y-1 text-start">
-                  <label className="text-[11px] font-bold text-text-primary block">
-                    رقم الهاتف للتأكيد والشحن <span className="text-destructive">*</span>
-                  </label>
-                  <div className="relative flex items-center">
-                    <Phone
-                      size={15}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
-                    />
+                  {/* Last Name */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-brand-900 block">
+                      الاسم الأخير <span className="text-red-500 font-bold">*</span>
+                    </label>
                     <input
-                      type="tel"
+                      type="text"
                       required
-                      inputMode="tel"
-                      placeholder="01012345678"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full h-11 pr-10 pl-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 font-mono focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none"
+                      placeholder=""
+                      value={formData.lastName}
+                      onChange={(e) =>
+                        setFormData({ ...formData, lastName: e.target.value })
+                      }
+                      className="w-full h-11 px-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none"
                     />
                   </div>
                 </div>
 
-                {/* Email */}
-                <div className="sm:col-span-2 space-y-1 text-start">
-                  <label className="text-[11px] font-bold text-text-primary block">
-                    البريد الإلكتروني (اختياري لاستلام الفاتورة الرقمية)
-                  </label>
-                  <div className="relative flex items-center">
-                    <Mail
-                      size={15}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
-                    />
-                    <input
-                      type="email"
-                      placeholder="name@example.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full h-11 pr-10 pl-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 font-mono focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 2: Delivery Address */}
-            <div className="bg-white rounded-2xl border border-border-default/90 p-5 sm:p-6 space-y-4 shadow-xs">
-              <h2 className="text-sm font-extrabold text-brand-900 flex items-center gap-2 border-b border-border-default/60 pb-3">
-                <MapPin size={16} className="text-[#1E6091]" />
-                <span>2. عنوان التوصيل والشحن</span>
-              </h2>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Governorate */}
-                <div className="space-y-1 text-start">
-                  <label className="text-[11px] font-bold text-text-primary block">
-                    المحافظة <span className="text-destructive">*</span>
-                  </label>
-                  <select
-                    value={formData.governorate}
-                    onChange={(e) => setFormData({ ...formData, governorate: e.target.value })}
-                    className="w-full h-11 px-3.5 rounded-xl bg-surface-50 border border-border-default text-xs font-semibold text-brand-900 focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none cursor-pointer"
-                  >
-                    {EGYPT_GOVERNORATES.map((gov) => (
-                      <option key={gov.name} value={gov.name}>
-                        {gov.name} {gov.fee === 0 ? "(شحن مجاني)" : `(${gov.fee} ج.م)`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* City */}
-                <div className="space-y-1 text-start">
-                  <label className="text-[11px] font-bold text-text-primary block">
-                    المدينة / الحي / المنطقة <span className="text-destructive">*</span>
+                {/* 3. عنوان الشارع / الحي * */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-brand-900 block">
+                    عنوان الشارع / الحي <span className="text-red-500 font-bold">*</span>
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="مثال: التجمع الخامس، مدينة نصر، سموحة"
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full h-11 px-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none"
-                  />
-                </div>
-
-                {/* Detailed Street Address */}
-                <div className="sm:col-span-2 space-y-1 text-start">
-                  <label className="text-[11px] font-bold text-text-primary block">
-                    العنوان بالتفصيل (اسم الشارع، رقم العمارة، الشقة / الفيلا) <span className="text-destructive">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="مثال: شارع التسعين الشمالي، عمارة 45، الدور الثالث، شقة 6"
+                    placeholder="رقم المنزل واسم الشارع / الحي"
                     value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, address: e.target.value })
+                    }
                     className="w-full h-11 px-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none"
                   />
                 </div>
 
-                {/* Order Notes */}
-                <div className="sm:col-span-2 space-y-1 text-start">
-                  <label className="text-[11px] font-bold text-text-primary block">
-                    ملاحظات التوصيل أو مواعيد الاستلام المفضلة (اختياري)
+                {/* 4. المدينة * */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-brand-900 block">
+                    المدينة <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder=""
+                    value={formData.city}
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
+                    className="w-full h-11 px-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none"
+                  />
+                </div>
+
+                {/* 5. المنطقة * (Governorate selection) */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-brand-900 block">
+                    المنطقة <span className="text-red-500 font-bold">*</span>
                   </label>
                   <div className="relative">
-                    <textarea
-                      rows={2}
-                      placeholder="مثال: يرجى الاتصال قبل الوصول بساعة، التسليم لمشرف الموقع..."
-                      value={formData.notes}
-                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                      className="w-full p-3 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none resize-none"
+                    <select
+                      value={formData.governorate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, governorate: e.target.value })
+                      }
+                      className="w-full h-11 px-3.5 rounded-xl bg-surface-50 border border-border-default text-xs font-semibold text-brand-900 focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none appearance-none cursor-pointer"
+                    >
+                      {EGYPT_GOVERNORATES.map((gov) => (
+                        <option key={gov.name} value={gov.name}>
+                          {gov.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown
+                      size={16}
+                      className="absolute start-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
                     />
                   </div>
+                </div>
+
+                {/* 6. الهاتف * */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-brand-900 block">
+                    الهاتف <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    inputMode="tel"
+                    placeholder=""
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                    className="w-full h-11 px-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 font-mono focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none"
+                  />
+                </div>
+
+                {/* 7. البريد الإلكتروني * */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-brand-900 block">
+                    البريد الإلكتروني <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder=""
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    className="w-full h-11 px-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 font-mono focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none"
+                  />
+                </div>
+
+                {/* Checkboxes: Create Account & Ship to Different Address */}
+                <div className="pt-3 space-y-2.5 border-t border-border-default/60">
+                  <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-brand-900 select-none">
+                    <input
+                      type="checkbox"
+                      checked={formData.createAccount}
+                      onChange={(e) =>
+                        setFormData({ ...formData, createAccount: e.target.checked })
+                      }
+                      className="w-4 h-4 rounded border-border-default text-[#1E6091] focus:ring-[#1E6091] cursor-pointer"
+                    />
+                    <span>هل تودّ إنشاء حساب جديد؟</span>
+                  </label>
+
+                  <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-brand-900 select-none">
+                    <input
+                      type="checkbox"
+                      checked={formData.shipToDifferentAddress}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          shipToDifferentAddress: e.target.checked,
+                        })
+                      }
+                      className="w-4 h-4 rounded border-border-default text-[#1E6091] focus:ring-[#1E6091] cursor-pointer"
+                    />
+                    <span>هل تودّ الشحن لعنوان مختلف؟</span>
+                  </label>
+
+                  {/* Expanded Different Address Fields if Checked */}
+                  {formData.shipToDifferentAddress && (
+                    <div className="p-4 bg-surface-50 rounded-xl border border-border-default/80 space-y-3 mt-2 animate-in fade-in duration-200">
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-brand-900 block">
+                          اسم المستلم
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="اسم الشخص المستلم للشحنة"
+                          value={formData.diffRecipientName}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              diffRecipientName: e.target.value,
+                            })
+                          }
+                          className="w-full h-10 px-3 rounded-lg bg-white border border-border-default text-xs text-brand-900 focus:border-[#1E6091] outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-brand-900 block">
+                          عنوان الشحن المختلف
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="الشارع، رقم العمارة / الفيلا"
+                          value={formData.diffAddress}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              diffAddress: e.target.value,
+                            })
+                          }
+                          className="w-full h-10 px-3 rounded-lg bg-white border border-border-default text-xs text-brand-900 focus:border-[#1E6091] outline-none"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 8. ملاحظات الطلب (اختياري) */}
+                <div className="pt-2 space-y-1.5">
+                  <label className="text-xs font-bold text-text-muted block">
+                    ملاحظات الطلب <span className="font-normal">(اختياري)</span>
+                  </label>
+                  <textarea
+                    rows={4}
+                    placeholder="ملاحظات حول الطلب، مثال: ملحوظة خاصة بتسليم الطلب."
+                    value={formData.notes}
+                    onChange={(e) =>
+                      setFormData({ ...formData, notes: e.target.value })
+                    }
+                    className="w-full p-3.5 rounded-xl bg-surface-50 border border-border-default text-xs text-brand-900 focus:bg-white focus:border-[#1E6091] focus:ring-2 focus:ring-[#1E6091]/15 transition-all outline-none resize-y"
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Section 3: Payment Method */}
-            <div className="bg-white rounded-2xl border border-border-default/90 p-5 sm:p-6 space-y-4 shadow-xs">
+            {/* Section: Payment Method */}
+            <div className="bg-white rounded-2xl border border-border-default/90 p-5 sm:p-6 space-y-4 shadow-xs text-start">
               <h2 className="text-sm font-extrabold text-brand-900 flex items-center gap-2 border-b border-border-default/60 pb-3">
                 <Banknote size={16} className="text-[#1E6091]" />
-                <span>3. طريقة الدفع وتأكيد الحجز</span>
+                <span>طريقة الدفع وتأكيد الحجز</span>
               </h2>
 
               <div className="space-y-3">
@@ -434,7 +552,7 @@ export function CheckoutView() {
                   </div>
                 </label>
 
-                {/* Option 2: InstaPay / Vodafone Cash */}
+                {/* Option 2: InstaPay */}
                 <label
                   onClick={() => setFormData({ ...formData, paymentMethod: "instapay" })}
                   className={`flex items-start gap-3.5 p-4 rounded-2xl border transition-all cursor-pointer ${
@@ -452,197 +570,177 @@ export function CheckoutView() {
                     className="mt-1 accent-[#1E6091]"
                   />
                   <div className="space-y-1 text-start">
-                    <div className="flex items-center gap-2">
-                      <strong className="text-xs font-extrabold text-brand-900">
-                        إنستاباي / فودافون كاش ومحافظ إلكترونية
-                      </strong>
-                      <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
-                        تحويل فوري
-                      </span>
-                    </div>
+                    <strong className="text-xs font-extrabold text-brand-900">
+                      تحويل إنستاباي / محفظة إلكترونية (InstaPay / Wallets)
+                    </strong>
                     <p className="text-[11px] text-text-muted leading-relaxed">
-                      حول إجمالي الفاتورة فورياً عبر تطبيق InstaPay أو محفظة كاش، وسيتم تزويدك برقم التحويل لتأكيد الإشعار عبر واتساب.
+                      سيصلك رقم حساب التحويل وتأكيد الحجز الفوري مع خدمة العملاء على واتساب بعد إتمام الطلب مباشرة.
                     </p>
                   </div>
                 </label>
               </div>
             </div>
-
-            {/* Desktop Place Order Button */}
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="w-full h-12 bg-brand-900 hover:bg-[#1E6091] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
-            >
-              <span>{isPending ? "جاري تسجيل وتأكيد الطلب..." : "تأكيد الطلب الآن"}</span>
-              <ArrowLeft size={16} />
-            </Button>
           </form>
         </div>
 
-        {/* ── Right Column: Order Summary (5 cols) ── */}
-        <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
-          <div className="bg-white rounded-2xl border border-border-default/90 p-5 sm:p-6 space-y-5 shadow-xs">
-            <div className="flex items-center justify-between border-b border-border-default/60 pb-3">
-              <h2 className="text-sm font-extrabold text-brand-900">
-                ملخص سلة الشراء ({items.length} منتجات)
-              </h2>
-              <Link href="/cart" className="text-[11px] font-bold text-[#1E6091] hover:underline">
-                تعديل السلة
-              </Link>
-            </div>
+        {/* ── Right Column: Order Summary & Coupon (5 cols) ── */}
+        <div className="lg:col-span-5 space-y-6 sticky top-24">
+          <div className="bg-white rounded-2xl border border-border-default/90 p-5 sm:p-6 space-y-5 shadow-xs text-start">
+            <h2 className="text-sm font-extrabold text-brand-900 border-b border-border-default/60 pb-3 flex items-center justify-between">
+              <span>ملخص طلبك ({items.length} منتجات)</span>
+              <span className="text-xs font-bold text-[#1E6091]">بلو لاين الأصلية</span>
+            </h2>
 
-            {/* Itemized List */}
-            <div className="divide-y divide-border-default/50 max-h-[280px] overflow-y-auto pe-1 no-scrollbar space-y-3">
+            {/* Item Previews list */}
+            <div className="divide-y divide-border-default/40 max-h-64 overflow-y-auto overscroll-contain pr-1">
               {items.map((item) => {
-                const unitPrice =
+                const title = item.product?.title_ar || "منتج بلو لاين";
+                const finishName = item.variant?.finish_name || "كروم لامع";
+                const price =
                   item.variant?.price_override ??
                   item.product?.discount_price ??
                   item.product?.base_price ??
                   0;
                 const image =
                   item.variant?.image_urls?.[0] ||
-                  item.product?.variants?.[0]?.image_urls?.[0];
+                  item.product?.variants?.[0]?.image_urls?.[0] ||
+                  "/images/categories/faucet.jpg";
 
                 return (
-                  <div key={item.id} className="pt-3 first:pt-0 flex items-center gap-3">
-                    <div className="relative w-14 h-14 rounded-xl bg-white border border-border-default/60 shrink-0 overflow-hidden p-1 flex items-center justify-center">
-                      {image ? (
-                        <Image
-                          src={image}
-                          alt={item.product?.title_ar || "منتج"}
-                          fill
-                          sizes="56px"
-                          className="object-contain scale-110"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-surface-100 rounded" />
-                      )}
+                  <div key={`${item.product_id}-${item.variant_id}`} className="py-3 flex items-center gap-3">
+                    <div className="relative w-12 h-12 rounded-lg bg-surface-50 border border-border-default/60 overflow-hidden shrink-0">
+                      <Image src={image} alt={title} fill className="object-contain p-1" />
                     </div>
-
-                    <div className="flex-1 min-w-0 text-start">
-                      <h3 className="text-xs font-bold text-brand-900 truncate">
-                        {item.product?.title_ar}
-                      </h3>
-                      <p className="text-[11px] text-text-muted mt-0.5">
-                        {item.variant?.finish_name || "اللون الافتراضي"} × {item.quantity}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-xs font-bold text-brand-900 truncate">{title}</h4>
+                      <p className="text-[10px] text-text-muted">
+                        {finishName} × {item.quantity}
                       </p>
                     </div>
-
-                    <strong className="text-xs font-mono font-bold text-brand-900 shrink-0">
-                      {formatPrice(unitPrice * item.quantity)}
-                    </strong>
+                    <span className="text-xs font-bold text-brand-900">
+                      {formatPrice(price * item.quantity)}
+                    </span>
                   </div>
                 );
               })}
             </div>
 
-            {/* ── Coupon Code Box ── */}
-            <div className="pt-4 border-t border-border-default/60 space-y-2 text-xs">
-              <span className="font-bold text-slate-700 block text-start">
-                كوبون وقسيمة الخصم
-              </span>
-
+            {/* ── Coupon Input Box ── */}
+            <div className="pt-2 border-t border-border-default/60">
               {appliedCoupon ? (
-                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-between">
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Tag size={15} className="text-emerald-600 shrink-0" />
+                    <Tag size={15} className="text-emerald-700" />
                     <div>
-                      <span className="font-mono font-extrabold block text-xs">{appliedCoupon.code}</span>
-                      <span className="text-[10px] font-bold text-emerald-700">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-extrabold text-emerald-800 tracking-wider font-mono">
+                          {appliedCoupon.code}
+                        </span>
+                        <span className="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 py-0.2 rounded-full font-bold">
+                          تم تطبيق الخصم
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-emerald-700">
                         وفرت {formatPrice(couponDiscount)}
-                      </span>
+                      </p>
                     </div>
                   </div>
-
                   <button
                     type="button"
                     onClick={handleRemoveCoupon}
-                    className="w-6 h-6 rounded-md bg-white border border-emerald-200 text-emerald-600 hover:text-rose-600 hover:border-rose-200 flex items-center justify-center cursor-pointer transition-colors"
-                    title="إزالة الكوبون"
+                    className="p-1 text-emerald-700 hover:text-destructive transition-colors cursor-pointer"
+                    title="إلغاء الكوبون"
                   >
-                    <X size={13} />
+                    <X size={16} />
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleApplyCoupon} className="space-y-2">
+                <form onSubmit={handleApplyCoupon} className="space-y-1.5">
                   <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="أدخل كود الخصم (e.g. WELCOME10)"
-                      value={couponCodeInput}
-                      onChange={(e) => setCouponCodeInput(e.target.value.toUpperCase())}
-                      className="flex-1 h-10 px-3 rounded-xl bg-surface-50 border border-border-default text-xs font-mono font-bold uppercase outline-none focus:bg-white focus:border-[#1E6091]"
-                      dir="ltr"
-                    />
-                    <button
+                    <div className="relative flex-1">
+                      <Tag size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                      <input
+                        type="text"
+                        placeholder="هل لديك كود خصم؟"
+                        value={couponCodeInput}
+                        onChange={(e) => setCouponCodeInput(e.target.value.toUpperCase())}
+                        className="w-full h-10 pr-9 pl-3 rounded-xl bg-surface-50 border border-border-default text-xs font-bold uppercase tracking-wider text-brand-900 focus:bg-white focus:border-[#1E6091] outline-none"
+                      />
+                    </div>
+                    <Button
                       type="submit"
                       disabled={isApplyingCoupon || !couponCodeInput.trim()}
-                      className="px-4 h-10 rounded-xl bg-[#0B192C] hover:bg-[#1E6091] text-white text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer"
+                      className="h-10 px-4 bg-[#1E6091] hover:bg-brand-900 text-white text-xs font-bold rounded-xl cursor-pointer"
                     >
-                      {isApplyingCoupon ? "جاري الفحص..." : "تطبيق"}
-                    </button>
+                      {isApplyingCoupon ? "جاري التحقق..." : "تطبيق"}
+                    </Button>
                   </div>
-
                   {couponError && (
-                    <div className="p-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-[11px] font-bold flex items-center gap-1.5 animate-in fade-in">
-                      <AlertCircle size={13} className="shrink-0" />
-                      <span>{couponError}</span>
-                    </div>
+                    <p className="text-[11px] text-destructive font-semibold px-1">{couponError}</p>
                   )}
                 </form>
               )}
             </div>
 
-            {/* Price Calculations */}
-            <div className="pt-4 border-t border-border-default/60 space-y-2.5 text-xs">
-              <div className="flex items-center justify-between text-text-muted">
+            {/* Calculations Breakdown */}
+            <div className="space-y-2.5 pt-3 border-t border-border-default/60 text-xs">
+              <div className="flex justify-between text-text-secondary">
                 <span>المجموع الفرعي:</span>
-                <span className="font-mono font-bold text-brand-900">{formatPrice(subtotal)}</span>
+                <span className="font-bold text-brand-900">{formatPrice(subtotal)}</span>
               </div>
 
               {couponDiscount > 0 && (
-                <div className="flex items-center justify-between text-emerald-700 font-bold">
+                <div className="flex justify-between text-emerald-700 font-bold">
                   <span>خصم الكوبون ({appliedCoupon?.code}):</span>
-                  <span className="font-mono">- {formatPrice(couponDiscount)}</span>
+                  <span>- {formatPrice(couponDiscount)}</span>
                 </div>
               )}
 
-              <div className="flex items-center justify-between text-text-muted">
-                <span>تكلفة الشحن ({formData.governorate}):</span>
-                <span className="font-mono font-bold text-brand-900">
-                  {isFreeShipping ? (
-                    <span className="text-emerald-700 font-bold">شحن مجاني ✓</span>
+              <div className="flex justify-between text-text-secondary">
+                <span>الشحن والتوصيل ({formData.governorate}):</span>
+                <span>
+                  {shippingCost === 0 ? (
+                    <span className="text-emerald-700 font-bold">شحن مجاني 🎉</span>
                   ) : (
                     formatPrice(shippingCost)
                   )}
                 </span>
               </div>
 
-              {isFreeShipping && (
-                <div className="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold flex items-center gap-1.5">
-                  <Sparkles size={13} />
-                  <span>تم تطبيق الشحن المجاني لتجاوز الطلب 5,000 ج.م!</span>
-                </div>
-              )}
-
-              <div className="pt-3 border-t border-border-default flex items-center justify-between">
-                <strong className="text-sm font-extrabold text-brand-900">الإجمالي النهائي:</strong>
-                <strong className="text-lg font-extrabold text-[#1E6091] font-mono">
+              <div className="pt-3 border-t border-border-default flex justify-between items-baseline">
+                <span className="text-sm font-extrabold text-brand-900">الإجمالي النهائي:</span>
+                <span className="text-xl font-black text-[#1E6091] font-mono">
                   {formatPrice(grandTotal)}
-                </strong>
+                </span>
               </div>
             </div>
 
-            {/* Security Badges */}
-            <div className="pt-3 border-t border-border-default/60 space-y-1.5 text-[11px] text-text-muted text-start">
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck size={13} className="text-emerald-600 shrink-0" />
-                <span>ضمان شامل 5 سنوات على جميع الخلاطات الألمانية</span>
+            {/* Submit Order Button */}
+            <Button
+              type="submit"
+              form="checkout-form"
+              disabled={isPending}
+              className="w-full h-12 rounded-xl bg-brand-900 hover:bg-[#1E6091] text-white text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {isPending ? (
+                <span>جاري تأكيد وحفظ الطلب...</span>
+              ) : (
+                <>
+                  <Lock size={15} />
+                  <span>تأكيد الطلب الآن ({formatPrice(grandTotal)})</span>
+                </>
+              )}
+            </Button>
+
+            {/* Security Trust Badges */}
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border-default/60 text-[10px] text-text-muted font-semibold text-center">
+              <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-surface-50">
+                <ShieldCheck size={14} className="text-[#1E6091]" />
+                <span>ضمان الوكيل المعتمد</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 size={13} className="text-emerald-600 shrink-0" />
-                <span>فحص ومعاينة المنتجات قبل سداد القيمة</span>
+              <div className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-surface-50">
+                <CheckCircle2 size={14} className="text-emerald-600" />
+                <span>معاينة قبل الاستلام</span>
               </div>
             </div>
           </div>
