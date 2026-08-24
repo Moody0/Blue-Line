@@ -31,8 +31,11 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Blue Line Sanitary Ware" }],
   icons: {
-    icon: "/icon",
-    apple: "/icon",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: [{ url: "/logo.png" }],
   },
   openGraph: {
     title: "Blue Line | بلو لاين — Luxury Sanitary Ware",
