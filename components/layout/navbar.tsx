@@ -104,7 +104,7 @@ export function Navbar({ cartItemCount, onOpenCart, navLinks }: NavbarProps) {
 
             {/* ── 2. Center (Desktop Only): Dynamic Essential Pages Navigation ── */}
             <nav className="hidden lg:flex items-center gap-7 xl:gap-9 mx-auto">
-              {displayLinks.map((page) => {
+              {displayLinks.map((page, idx) => {
                 const isActive =
                   page.href === "/"
                     ? pathname === "/"
@@ -112,7 +112,7 @@ export function Navbar({ cartItemCount, onOpenCart, navLinks }: NavbarProps) {
 
                 return (
                   <Link
-                    key={page.href}
+                    key={page.id || `${page.href}-${idx}`}
                     href={page.href}
                     className={cn(
                       "relative text-xs xl:text-sm font-bold transition-colors py-2 group",

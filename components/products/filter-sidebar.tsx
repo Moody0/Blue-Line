@@ -236,11 +236,11 @@ export function FilterSidebar({
               </Link>
 
               {/* Individual Categories */}
-              {filteredCategoriesList.map((cat) => {
+              {filteredCategoriesList.map((cat, idx) => {
                 const isActive = activeCategorySlug === cat.slug;
                 return (
                   <Link
-                    key={cat.slug}
+                    key={cat.id || `${cat.slug}-${idx}`}
                     href={`/category/${cat.slug}`}
                     ref={isActive ? activeCategoryRef : undefined}
                     className={cn(
