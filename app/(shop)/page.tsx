@@ -9,7 +9,6 @@ import { HeroSlider } from "@/components/home/hero-slider";
 import { CategoryShowcase } from "@/components/home/category-showcase";
 import { PopularProducts } from "@/components/home/popular-products";
 import { DealsSection } from "@/components/home/deals-section";
-import { FinishShowcase } from "@/components/home/finish-showcase";
 import { TopRatedProducts } from "@/components/home/top-rated-products";
 import { ServicePillars } from "@/components/home/service-pillars";
 
@@ -40,13 +39,10 @@ export default async function HomePage() {
       {/* 4. Deal Of The Week — with Red Countdown Timer */}
       <DealsSection products={dealProducts} />
 
-      {/* 5. Architectural PVD Finishes & Colors Explorer */}
-      <FinishShowcase />
-
-      {/* 6. Top Rated Architectural Fixtures */}
+      {/* 5. Top Rated Architectural Fixtures */}
       <TopRatedProducts products={topRatedProducts} />
 
-      {/* 7. Highest Quality Service — 4 Detailed Pillars from CMS */}
+      {/* 6. Highest Quality Service — 4 Detailed Pillars from CMS */}
       <ServicePillars pillars={siteSettings.service_pillars} />
     </div>
   );
