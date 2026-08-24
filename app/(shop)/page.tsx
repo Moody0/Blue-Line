@@ -6,6 +6,7 @@ import {
 } from "@/actions/catalog";
 import { getSiteSettings } from "@/actions/settings";
 import { HeroSlider } from "@/components/home/hero-slider";
+import { TrustValueStrip } from "@/components/home/trust-value-strip";
 import { CategoryShowcase } from "@/components/home/category-showcase";
 import { PopularProducts } from "@/components/home/popular-products";
 import { TopRatedProducts } from "@/components/home/top-rated-products";
@@ -26,24 +27,27 @@ export default async function HomePage() {
     ]);
 
   return (
-    <div className="space-y-24 pb-28">
+    <div className="space-y-16 sm:space-y-20 pb-28 font-alexandria">
       {/* 1. Dynamic Cinematic Hero Slider from CMS */}
       <HeroSlider slides={siteSettings.hero_slides} />
 
-      {/* 2. Shop By Categories — Dynamic Categories Grid from Backend */}
+      {/* 2. Fast Value & Trust Pillars Floating Bar */}
+      <TrustValueStrip />
+
+      {/* 3. Shop By Categories — Balanced Symmetrical Grid / Mobile Swipe */}
       <CategoryShowcase categories={categories} />
 
-      {/* 3. Popular Products Grid with Tabs */}
+      {/* 4. Popular Products Grid with Tabs (Best Sellers, Featured, New) */}
       <PopularProducts products={popularProducts} />
 
-      {/* 4. Top Rated Products Grid (No Filter Tabs + Centered Action) */}
+      {/* 5. Deal Of The Week — with Red Countdown Timer */}
+      <DealsSection products={dealProducts} />
+
+      {/* 6. Top Rated Architectural Fixtures */}
       <TopRatedProducts products={topRatedProducts} />
 
-      {/* 5. Highest Quality Service — 4 Round Pillars from CMS */}
+      {/* 7. Highest Quality Service — 4 Detailed Pillars from CMS */}
       <ServicePillars pillars={siteSettings.service_pillars} />
-
-      {/* 6. Deal Of The Week — with Red Countdown Timer */}
-      <DealsSection products={dealProducts} />
     </div>
   );
 }
