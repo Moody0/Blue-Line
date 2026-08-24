@@ -47,7 +47,7 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
   };
 
   return (
-    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 font-alexandria" dir="rtl">
       {/* Centered Main Title */}
       <div className="text-center space-y-2">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
@@ -75,7 +75,7 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
               <Link
                 key={cat.id}
                 href={`/category/${cat.slug}`}
-                className="group relative block shrink-0 w-[calc(50%-0.5rem)] sm:w-[calc(50%-0.75rem)] lg:w-full max-w-[326px] h-[280px] sm:h-[350px] overflow-hidden bg-surface-100 shadow-sm transition-all duration-300 hover:shadow-elevated snap-start"
+                className="group relative block shrink-0 w-[calc(50%-0.5rem)] sm:w-[calc(50%-0.75rem)] lg:w-full max-w-[326px] h-[280px] sm:h-[350px] overflow-hidden bg-surface-100 shadow-xs transition-all duration-300 hover:shadow-elevated snap-start"
               >
                 {/* High Resolution Category Image */}
                 <div className="relative w-full h-full overflow-hidden">
@@ -123,32 +123,35 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
         </div>
       </div>
 
-      {/* Tier 2: 2 Wide Promotional Banners */}
+      {/* Tier 2: 2 Wide Editorial Promotional Banners (Matching Exact Reference Design) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-7 pt-4">
-        {/* Banner 1: Faucets */}
-        <div className="relative bg-[#F3F5F7] rounded-none overflow-hidden shadow-xs hover:shadow-elevated transition-all duration-300 min-h-[250px] sm:min-h-[270px] flex items-center group">
-          <div className="absolute start-0 top-0 bottom-0 w-[55%] sm:w-[50%] overflow-hidden z-0">
+        {/* Banner 1: Faucets (Warm Neutral Background) */}
+        <div className="relative bg-[#F4F1EA] rounded-none overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-[220px] sm:h-[240px] flex items-center group">
+          {/* Image Container on Left in RTL (End side) with seamless gradient */}
+          <div className="absolute end-0 top-0 bottom-0 w-[50%] sm:w-[48%] overflow-hidden z-0 pointer-events-none">
             <Image
               src="/images/promo/faucet-banner.jpg"
               alt="خلاطات المغاسل وأحواض الحمام"
               fill
-              sizes="(max-width: 640px) 60vw, 30vw"
-              className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-l from-[#F3F5F7] via-[#F3F5F7]/40 to-transparent" />
+            {/* Smooth gradient blend into #F4F1EA */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F4F1EA]/50 to-[#F4F1EA]" />
           </div>
 
-          <div className="relative z-10 ms-auto w-[55%] sm:w-[52%] p-6 sm:p-8 flex flex-col justify-center items-start text-start space-y-3.5">
-            <span className="text-[11px] font-bold text-text-secondary tracking-widest uppercase">
+          {/* Text Content Container (Start side in RTL) */}
+          <div className="relative z-10 w-[58%] sm:w-[54%] p-6 sm:p-8 flex flex-col justify-center items-start text-start space-y-2.5">
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-600 tracking-wider uppercase">
               خصم ٢٥٪ حصري
             </span>
-            <h3 className="text-xl sm:text-2xl font-extrabold text-brand-900 leading-snug">
+            <h3 className="text-xl sm:text-2xl font-bold text-[#0B192C] leading-snug tracking-tight">
               خلاطات المغاسل وأحواض الحمام
             </h3>
-            <div className="pt-1">
+            <div className="pt-2">
               <Link
                 href="/category/mixers-basins"
-                className="inline-block bg-[#1E6091] hover:bg-brand-900 text-white font-bold py-2.5 px-8 text-xs tracking-wider shadow-xs transition-colors"
+                className="inline-flex items-center justify-center bg-[#1E6091] hover:bg-[#15486E] text-white font-bold py-2.5 px-7 text-xs uppercase tracking-wider transition-colors shadow-2xs"
               >
                 تسوق الآن
               </Link>
@@ -156,30 +159,33 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
           </div>
         </div>
 
-        {/* Banner 2: Pressure Shower */}
-        <div className="relative bg-[#F3F5F7] rounded-none overflow-hidden shadow-xs hover:shadow-elevated transition-all duration-300 min-h-[250px] sm:min-h-[270px] flex items-center group">
-          <div className="absolute start-0 top-0 bottom-0 w-[55%] sm:w-[50%] overflow-hidden z-0">
+        {/* Banner 2: Pressure Shower (Cool Crisp Neutral Background) */}
+        <div className="relative bg-[#ECEEF0] rounded-none overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-[220px] sm:h-[240px] flex items-center group">
+          {/* Image Container on Left in RTL (End side) with seamless gradient */}
+          <div className="absolute end-0 top-0 bottom-0 w-[50%] sm:w-[48%] overflow-hidden z-0 pointer-events-none">
             <Image
               src="/images/promo/shower-banner.jpg"
               alt="سماعات الشاور والدش المطري"
               fill
-              sizes="(max-width: 640px) 60vw, 30vw"
-              className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-l from-[#F3F5F7] via-[#F3F5F7]/40 to-transparent" />
+            {/* Smooth gradient blend into #ECEEF0 */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ECEEF0]/50 to-[#ECEEF0]" />
           </div>
 
-          <div className="relative z-10 ms-auto w-[55%] sm:w-[52%] p-6 sm:p-8 flex flex-col justify-center items-start text-start space-y-3.5">
-            <span className="text-[11px] font-bold text-text-secondary tracking-widest uppercase">
+          {/* Text Content Container (Start side in RTL) */}
+          <div className="relative z-10 w-[58%] sm:w-[54%] p-6 sm:p-8 flex flex-col justify-center items-start text-start space-y-2.5">
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-600 tracking-wider uppercase">
               خصم ٢٠٪ لفترة محدودة
             </span>
-            <h3 className="text-xl sm:text-2xl font-extrabold text-brand-900 leading-snug">
+            <h3 className="text-xl sm:text-2xl font-bold text-[#0B192C] leading-snug tracking-tight">
               سماعات الشاور والدش المطري
             </h3>
-            <div className="pt-1">
+            <div className="pt-2">
               <Link
                 href="/category/shower-bury"
-                className="inline-block bg-[#1E6091] hover:bg-brand-900 text-white font-bold py-2.5 px-8 text-xs tracking-wider shadow-xs transition-colors"
+                className="inline-flex items-center justify-center bg-[#1E6091] hover:bg-[#15486E] text-white font-bold py-2.5 px-7 text-xs uppercase tracking-wider transition-colors shadow-2xs"
               >
                 تسوق الآن
               </Link>
