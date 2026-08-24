@@ -22,7 +22,7 @@ export function MobileNav({ open, onOpenChange, currentUser }: MobileNavProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        side="right"
+        side="left"
         showCloseButton={false}
         className="w-[85vw] max-w-sm bg-white p-0 flex flex-col justify-between font-alexandria select-none"
         dir="rtl"
@@ -96,7 +96,7 @@ export function MobileNav({ open, onOpenChange, currentUser }: MobileNavProps) {
                   className="flex items-center gap-2.5 py-2.5 px-3.5 rounded-xl text-text-secondary hover:text-brand-900 hover:bg-surface-50 text-xs font-semibold transition-colors"
                 >
                   <ShieldCheck size={16} className="text-[#1E6091]" />
-                  <span>شهادة الضمان المعتمد والصيانة</span>
+                  <span>قوانين وسياسة الضمان</span>
                 </Link>
                 <Link
                   href="/track-order"
@@ -126,11 +126,6 @@ export function MobileNav({ open, onOpenChange, currentUser }: MobileNavProps) {
 
         {/* Footer / Account section */}
         <div className="p-5 bg-surface-50 border-t border-border-default space-y-3">
-          <div className="flex items-center justify-between text-xs text-text-muted font-medium">
-            <span>العملة: {CURRENCY.symbol} (الجنيه المصري)</span>
-            <span>القاهرة، مصر</span>
-          </div>
-
           {currentUser ? (
             <div className="space-y-2">
               <Link
@@ -151,6 +146,16 @@ export function MobileNav({ open, onOpenChange, currentUser }: MobileNavProps) {
                 </div>
                 <ChevronLeft size={16} className="text-text-muted" />
               </Link>
+
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-destructive hover:bg-destructive/10 rounded-lg transition-colors cursor-pointer"
+                >
+                  <LogOut size={14} />
+                  <span>تسجيل الخروج</span>
+                </button>
+              </form>
             </div>
           ) : (
             <Link
@@ -158,7 +163,7 @@ export function MobileNav({ open, onOpenChange, currentUser }: MobileNavProps) {
               onClick={() => onOpenChange(false)}
               className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-brand-900 hover:bg-[#1E6091] text-white rounded-xl text-xs font-bold transition-all shadow-sm"
             >
-              <User size={15} />
+              <User size={16} />
               <span>تسجيل الدخول / إنشاء حساب</span>
             </Link>
           )}

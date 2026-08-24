@@ -20,7 +20,7 @@ interface NavbarProps {
 const MAIN_PAGES = [
   { nameAr: "الرئيسية", href: "/" },
   { nameAr: "جميع المنتجات", href: "/products" },
-  { nameAr: "الضمان المعتمد", href: "/warranty" },
+  { nameAr: "قوانين الضمان", href: "/warranty" },
   { nameAr: "تتبع طلبك", href: "/track-order" },
   { nameAr: "الاستبدال والاسترجاع", href: "/returns" },
 ];
@@ -95,17 +95,7 @@ export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
             </div>
 
             {/* ── 2. Center (Desktop Only): Main Essential Pages Navigation ── */}
-            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 mx-auto">
-              {/* Category Drawer Trigger Button */}
-              <button
-                type="button"
-                onClick={() => setMobileNavOpen(true)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-50 hover:bg-surface-100 text-[#1E6091] font-bold text-xs xl:text-sm transition-colors border border-border-default/80 cursor-pointer shadow-2xs group"
-              >
-                <LayoutGrid size={15} className="group-hover:rotate-90 transition-transform duration-300" />
-                <span>أقسام المتجر</span>
-              </button>
-
+            <nav className="hidden lg:flex items-center gap-7 xl:gap-9 mx-auto">
               {MAIN_PAGES.map((page) => {
                 const isActive =
                   page.href === "/"

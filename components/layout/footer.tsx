@@ -19,7 +19,7 @@ const DEFAULT_CATEGORIES_COLUMN: FooterColumn = {
 const DEFAULT_SERVICES_COLUMN: FooterColumn = {
   title: "خدمات وضمانات",
   links: [
-    { label: "شهادة الضمان المعتمد والصيانة", href: "/warranty" },
+    { label: "قوانين وسياسة الضمان", href: "/warranty" },
     { label: "سياسة الشحن والتوصيل للمحافظات", href: "/shipping" },
     { label: "سياسة الاسترجاع والاستبدال (١٤ يوماً)", href: "/returns" },
     { label: "تتبع حالة الشحنة والطلب", href: "/track-order" },
