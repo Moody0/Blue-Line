@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   ChevronUp,
@@ -8,7 +8,7 @@ import {
   RotateCcw,
   Check,
   FolderTree,
-  Sparkles,
+  Search,
 } from "lucide-react";
 import { formatPrice } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
@@ -60,6 +60,8 @@ export function FilterSidebar({
     color: true,
     brand: true,
   });
+
+  const [categorySearchQuery, setCategorySearchQuery] = useState("");
 
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -113,17 +115,28 @@ export function FilterSidebar({
     { nameAr: "أبيض ناصع Moon White", hex: "#FAFAFA" },
   ];
 
-  // Resolve complete categories list (from DB or fallback constants)
-  const allCategoryList =
-    categories.length > 0
-      ? categories
-      : NAV_CATEGORIES.map((c, i) => ({
-          id: `cat-${i}`,
-          name_ar: c.nameAr,
-          name_en: c.nameEn,
-          slug: c.slug,
-          created_at: new Date().toISOString(),
-        }));
+  // Resolve complete categories list
+  const allCategoryList = useMemo(() => {
+    if (categories.length > 0) return categories;
+    return NAV_CATEGORIES.map((c, i) => ({
+      id: `cat-${i}`,
+      name_ar: c.nameAr,
+      name_en: c.nameEn,
+      slug: c.slug,
+      created_at: new Date().toISOString(),
+    }));
+  }, [categories]);
+
+  // Filter categories by search if typed
+  const filteredCategoriesList = useMemo(() => {
+    if (!categorySearchQuery.trim()) return allCategoryList;
+    const q = categorySearchQuery.trim().toLowerCase();
+    return allCategoryList.filter(
+      (c) =>
+        c.name_ar.toLowerCase().includes(q) ||
+        c.name_en?.toLowerCase().includes(q)
+    );
+  }, [allCategoryList, categorySearchQuery]);
 
   const isAllProductsActive =
     !activeCategorySlug ||
@@ -133,13 +146,13 @@ export function FilterSidebar({
   return (
     <aside
       className={cn(
-        "w-full lg:w-64 shrink-0 space-y-5 text-start font-alexandria select-none",
+        "w-full lg:w-64 shrink-0 space-y-5 text-start font-alexandria select-none lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto lg:overscroll-contain no-scrollbar pe-1.5",
         className
       )}
       dir="rtl"
     >
       {/* Sidebar Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-border-default">
+      <div className="flex items-center justify-between pb-3 border-b border-border-default sticky top-0 bg-white/95 backdrop-blur-xs z-10">
         <h2 className="text-sm sm:text-base font-extrabold text-brand-900 tracking-tight">
           تصفية المنتجات
         </h2>
@@ -155,8 +168,8 @@ export function FilterSidebar({
         )}
       </div>
 
-      {/* 0. أقسام وتصنيفات المتجر (Categories Navigation) */}
-      <div className="space-y-3 pb-4 border-b border-border-default">
+      {/* 0. أقسام وتصنيفات المتجر (Compact Scrollable Categories) */}
+      <div className="space-y-2.5 pb-4 border-b border-border-default">
         <button
           type="button"
           onClick={() => toggleSection("categories")}
@@ -164,7 +177,7 @@ export function FilterSidebar({
         >
           <div className="flex items-center gap-2">
             <FolderTree size={15} className="text-[#1E6091]" />
-            <span>أقسام المتجر</span>
+            <span>أقسام المتجر ({allCategoryList.length})</span>
           </div>
           {openSections.categories ? (
             <ChevronUp size={15} />
@@ -174,48 +187,70 @@ export function FilterSidebar({
         </button>
 
         {openSections.categories && (
-          <div className="space-y-1 pt-1 text-xs">
-            {/* All Products Option */}
-            <Link
-              href="/products"
-              className={cn(
-                "flex items-center justify-between py-2 px-2.5 rounded-lg font-bold transition-colors",
-                isAllProductsActive
-                  ? "bg-[#1E6091] text-white shadow-2xs"
-                  : "text-text-secondary hover:text-brand-900 hover:bg-surface-50"
-              )}
-            >
-              <span>جميع المنتجات والتشكيلات</span>
-              {isAllProductsActive && (
-                <Check size={14} className="text-white" />
-              )}
-            </Link>
+          <div className="space-y-2 pt-1 text-xs">
+            {/* Quick Filter Search if > 6 categories */}
+            {allCategoryList.length > 6 && (
+              <div className="relative">
+                <Search
+                  size={13}
+                  className="absolute start-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+                />
+                <input
+                  type="text"
+                  placeholder="ابحث في الأقسام..."
+                  value={categorySearchQuery}
+                  onChange={(e) => setCategorySearchQuery(e.target.value)}
+                  className="w-full h-8 ps-7 pe-2.5 text-[11px] bg-surface-50 border border-border-default rounded-lg focus:outline-none focus:border-[#1E6091]"
+                />
+              </div>
+            )}
 
-            {/* Individual Categories */}
-            {allCategoryList.map((cat) => {
-              const isActive = activeCategorySlug === cat.slug;
-              return (
-                <Link
-                  key={cat.slug}
-                  href={`/category/${cat.slug}`}
-                  className={cn(
-                    "flex items-center justify-between py-2 px-2.5 rounded-lg transition-colors font-medium",
-                    isActive
-                      ? "bg-[#1E6091] text-white font-bold shadow-2xs"
-                      : "text-text-secondary hover:text-brand-900 hover:bg-surface-50"
-                  )}
-                >
-                  <span className="truncate">{cat.name_ar}</span>
-                  {isActive && <Check size={14} className="text-white shrink-0" />}
-                </Link>
-              );
-            })}
+            {/* Scrollable Categories Box (Max 180px height to prevent pushing filters off-screen) */}
+            <div className="max-h-44 overflow-y-auto overscroll-contain space-y-1 pe-1">
+              {/* All Products Option */}
+              <Link
+                href="/products"
+                className={cn(
+                  "flex items-center justify-between py-1.5 px-2.5 rounded-lg font-bold transition-colors text-xs",
+                  isAllProductsActive
+                    ? "bg-[#1E6091] text-white shadow-2xs"
+                    : "text-text-secondary hover:text-brand-900 hover:bg-surface-50"
+                )}
+              >
+                <span>جميع المنتجات والتشكيلات</span>
+                {isAllProductsActive && (
+                  <Check size={13} className="text-white" />
+                )}
+              </Link>
+
+              {/* Individual Categories */}
+              {filteredCategoriesList.map((cat) => {
+                const isActive = activeCategorySlug === cat.slug;
+                return (
+                  <Link
+                    key={cat.slug}
+                    href={`/category/${cat.slug}`}
+                    className={cn(
+                      "flex items-center justify-between py-1.5 px-2.5 rounded-lg transition-colors text-[11px]",
+                      isActive
+                        ? "bg-[#1E6091] text-white font-bold shadow-2xs"
+                        : "text-text-secondary hover:text-brand-900 hover:bg-surface-50 font-medium"
+                    )}
+                  >
+                    <span className="truncate">{cat.name_ar}</span>
+                    {isActive && (
+                      <Check size={13} className="text-white shrink-0" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
 
       {/* 1. حالة التوفر (Availability) */}
-      <div className="space-y-3 pb-4 border-b border-border-default">
+      <div className="space-y-2.5 pb-4 border-b border-border-default">
         <button
           type="button"
           onClick={() => toggleSection("availability")}
@@ -260,7 +295,7 @@ export function FilterSidebar({
       </div>
 
       {/* 2. نطاق السعر (Price Range) */}
-      <div className="space-y-3 pb-4 border-b border-border-default">
+      <div className="space-y-2.5 pb-4 border-b border-border-default">
         <button
           type="button"
           onClick={() => toggleSection("price")}
@@ -275,7 +310,7 @@ export function FilterSidebar({
         </button>
 
         {openSections.price && (
-          <div className="space-y-3 pt-1">
+          <div className="space-y-2.5 pt-1">
             <p className="text-[11px] text-text-muted">
               أعلى سعر متاح:{" "}
               <span className="font-bold text-brand-900">
@@ -294,7 +329,7 @@ export function FilterSidebar({
                     minPrice: e.target.value ? Number(e.target.value) : undefined,
                   })
                 }
-                className="w-full h-9 px-2 text-xs bg-surface-50 border border-border-default rounded-lg focus:outline-none focus:border-[#1E6091]"
+                className="w-full h-8 px-2 text-xs bg-surface-50 border border-border-default rounded-lg focus:outline-none focus:border-[#1E6091]"
               />
               <span className="text-text-muted text-xs">-</span>
               <input
@@ -307,7 +342,7 @@ export function FilterSidebar({
                     maxPrice: e.target.value ? Number(e.target.value) : undefined,
                   })
                 }
-                className="w-full h-9 px-2 text-xs bg-surface-50 border border-border-default rounded-lg focus:outline-none focus:border-[#1E6091]"
+                className="w-full h-8 px-2 text-xs bg-surface-50 border border-border-default rounded-lg focus:outline-none focus:border-[#1E6091]"
               />
             </div>
           </div>
@@ -315,7 +350,7 @@ export function FilterSidebar({
       </div>
 
       {/* 3. الطلاء ولون التشطيب (Finish Swatches) */}
-      <div className="space-y-3 pb-4 border-b border-border-default">
+      <div className="space-y-2.5 pb-4 border-b border-border-default">
         <button
           type="button"
           onClick={() => toggleSection("color")}
@@ -366,7 +401,7 @@ export function FilterSidebar({
       </div>
 
       {/* 4. العلامة التجارية (Brand) */}
-      <div className="space-y-3 pb-2">
+      <div className="space-y-2.5 pb-6">
         <button
           type="button"
           onClick={() => toggleSection("brand")}
