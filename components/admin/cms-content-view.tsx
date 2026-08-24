@@ -39,6 +39,7 @@ import type {
   FooterContent,
   FooterLink,
   FooterColumn,
+  NavLink,
 } from "@/types/ecommerce";
 import { updateSiteSettings } from "@/actions/settings";
 import { Input } from "@/components/ui/input";
@@ -71,7 +72,7 @@ const DEFAULT_CATEGORIES_COLUMN: FooterColumn = {
 const DEFAULT_SERVICES_COLUMN: FooterColumn = {
   title: "خدمات وضمانات",
   links: [
-    { label: "شهادة الضمان المعتمد والصيانة", href: "/warranty" },
+    { label: "قوانين وسياسة الضمان", href: "/warranty" },
     { label: "سياسة الشحن والتوصيل للمحافظات", href: "/shipping" },
     { label: "سياسة الاسترجاع والاستبدال (١٤ يوماً)", href: "/returns" },
     { label: "تتبع حالة الشحنة والطلب", href: "/track-order" },
@@ -79,8 +80,16 @@ const DEFAULT_SERVICES_COLUMN: FooterColumn = {
   ],
 };
 
+const DEFAULT_NAV_LINKS: NavLink[] = [
+  { id: "nav-1", label: "الرئيسية", href: "/", is_active: true },
+  { id: "nav-2", label: "جميع المنتجات", href: "/products", is_active: true },
+  { id: "nav-3", label: "قوانين الضمان", href: "/warranty", is_active: true },
+  { id: "nav-4", label: "تتبع طلبك", href: "/track-order", is_active: true },
+  { id: "nav-5", label: "الاستبدال والاسترجاع", href: "/returns", is_active: true },
+];
+
 export function CmsContentView({ initialSettings }: CmsContentViewProps) {
-  const [activeTab, setActiveTab] = useState<"hero" | "pillars" | "policies" | "announcement" | "footer">("hero");
+  const [activeTab, setActiveTab] = useState<"hero" | "pillars" | "policies" | "announcement" | "footer" | "navbar">("hero");
   const [policySubTab, setPolicySubTab] = useState<"warranty" | "returns" | "shipping" | "privacy" | "terms">("warranty");
 
   const [isPending, startTransition] = useTransition();
@@ -88,6 +97,7 @@ export function CmsContentView({ initialSettings }: CmsContentViewProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Form State
+  const [navLinks, setNavLinks] = useState<NavLink[]>(initialSettings.nav_links || DEFAULT_NAV_LINKS);
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(initialSettings.hero_slides || []);
   const [servicePillars, setServicePillars] = useState<ServicePillar[]>(initialSettings.service_pillars || []);
   const [warrantyContent, setWarrantyContent] = useState<WarrantyContent>(
@@ -199,6 +209,54 @@ export function CmsContentView({ initialSettings }: CmsContentViewProps) {
         setErrorMessage("حدث خطأ أثناء حفظ الفوتر");
       }
     });
+  };
+
+  const handleSaveNavbar = () => {
+    startTransition(async () => {
+      const res = await updateSiteSettings("nav_links", navLinks);
+      if (res.success) {
+        showNotification("تم حفظ روابط شريط التنقل العلوي (الهيدر) بنجاح!");
+      } else {
+        setErrorMessage(res.error || "حدث خطأ أثناء حفظ روابط الهيدر");
+      }
+    });
+  };
+
+  // ── Navbar Links Actions ──
+  const addNavLink = () => {
+    const newLink: NavLink = {
+      id: `nav-${Date.now()}`,
+      label: "رابط جديد",
+      href: "/products",
+      is_active: true,
+    };
+    setNavLinks([...navLinks, newLink]);
+  };
+
+  const removeNavLink = (id: string) => {
+    if (navLinks.length <= 1) {
+      alert("يجب الإبقاء على رابط تنقل واحد على الأقل في الهيدر.");
+      return;
+    }
+    setNavLinks(navLinks.filter((l) => l.id !== id));
+  };
+
+  const moveNavLink = (idx: number, direction: "up" | "down") => {
+    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= navLinks.length) return;
+    const copy = [...navLinks];
+    const temp = copy[idx];
+    copy[idx] = copy[targetIdx];
+    copy[targetIdx] = temp;
+    setNavLinks(copy);
+  };
+
+  const toggleNavLinkActive = (id: string) => {
+    setNavLinks(
+      navLinks.map((l) =>
+        l.id === id ? { ...l, is_active: !l.is_active } : l
+      )
+    );
   };
 
   // ── Slide Actions ──
@@ -399,6 +457,21 @@ export function CmsContentView({ initialSettings }: CmsContentViewProps) {
         >
           <LayoutTemplate size={15} />
           <span>فوتر المتجر (Footer CMS)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("navbar")}
+          className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === "navbar"
+              ? "border-[#1E6091] text-[#1E6091] bg-slate-50/50"
+              : "border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300"
+          }`}
+        >
+          <LinkIcon size={15} />
+          <span>روابط الهيدر والتنقل (Navbar Links)</span>
+          <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">
+            {navLinks.length}
+          </span>
         </button>
       </div>
 
@@ -1421,6 +1494,158 @@ export function CmsContentView({ initialSettings }: CmsContentViewProps) {
                   </button>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 8. Tab 6: Navbar & Menu Links Manager ── */}
+      {activeTab === "navbar" && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                <LinkIcon size={16} className="text-[#1E6091]" />
+                <span>إدارة روابط شريط التنقل العلوي (الهيدر)</span>
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                أضف أو عدل أو أعد ترتيب الروابط والصفحات المعروضة في شريط التنقل العلوي للمتجر.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={addNavLink}
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+              >
+                <Plus size={14} />
+                <span>إضافة رابط جديد</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSaveNavbar}
+                disabled={isPending}
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[#1E6091] text-white text-xs font-bold hover:bg-[#15486E] transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+              >
+                <Save size={14} />
+                <span>{isPending ? "جاري الحفظ..." : "حفظ التغييرات"}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4 shadow-2xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <span className="text-xs font-bold text-slate-700">
+                قائمة روابط الهيدر ({navLinks.length} روابط)
+              </span>
+              <span className="text-[11px] text-slate-400">
+                الروابط المفعلة فقط ستظهر في شريط التنقل للزوار
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {navLinks.map((link, idx) => (
+                <div
+                  key={link.id || idx}
+                  className={`flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3.5 rounded-xl border transition-all ${
+                    link.is_active !== false
+                      ? "bg-slate-50/70 border-slate-200 hover:border-[#1E6091]/50"
+                      : "bg-slate-100/60 border-dashed border-slate-300 opacity-60"
+                  }`}
+                >
+                  {/* Reorder Buttons */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => moveNavLink(idx, "up")}
+                      disabled={idx === 0}
+                      className="w-7 h-7 rounded-md bg-white border border-slate-200 text-slate-500 hover:text-slate-900 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center cursor-pointer transition-colors"
+                      title="تحريك لأعلى"
+                    >
+                      <ArrowUp size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveNavLink(idx, "down")}
+                      disabled={idx === navLinks.length - 1}
+                      className="w-7 h-7 rounded-md bg-white border border-slate-200 text-slate-500 hover:text-slate-900 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center cursor-pointer transition-colors"
+                      title="تحريك لأسفل"
+                    >
+                      <ArrowDown size={13} />
+                    </button>
+                  </div>
+
+                  {/* Active Toggle Checkbox */}
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-700 shrink-0 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={link.is_active !== false}
+                      onChange={() => toggleNavLinkActive(link.id)}
+                      className="w-4 h-4 rounded text-[#1E6091] focus:ring-[#1E6091] cursor-pointer"
+                    />
+                    <span>{link.is_active !== false ? "مفعل" : "معطل"}</span>
+                  </label>
+
+                  {/* Link Label Input */}
+                  <div className="flex-1 w-full sm:w-auto">
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">
+                      اسم الرابط (بالعربية)
+                    </label>
+                    <Input
+                      value={link.label}
+                      onChange={(e) => {
+                        const copy = [...navLinks];
+                        copy[idx].label = e.target.value;
+                        setNavLinks(copy);
+                      }}
+                      placeholder="مثال: جميع المنتجات"
+                      className="h-9 text-xs bg-white"
+                    />
+                  </div>
+
+                  {/* Link Route / URL Input */}
+                  <div className="flex-1 w-full sm:w-auto">
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">
+                      مسار الصفحة (URL / Route)
+                    </label>
+                    <Input
+                      value={link.href}
+                      onChange={(e) => {
+                        const copy = [...navLinks];
+                        copy[idx].href = e.target.value;
+                        setNavLinks(copy);
+                      }}
+                      placeholder="/products"
+                      className="h-9 text-xs font-mono bg-white"
+                      dir="ltr"
+                    />
+                  </div>
+
+                  {/* Delete Button */}
+                  <button
+                    type="button"
+                    onClick={() => removeNavLink(link.id)}
+                    className="w-9 h-9 mt-auto sm:mt-0 rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-rose-600 flex items-center justify-center shrink-0 cursor-pointer hover:bg-rose-50 transition-colors"
+                    title="حذف هذا الرابط"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={handleSaveNavbar}
+                disabled={isPending}
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#1E6091] text-white text-xs font-bold hover:bg-[#15486E] transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+              >
+                <Save size={14} />
+                <span>{isPending ? "جاري الحفظ..." : "حفظ روابط الهيدر"}</span>
+              </button>
             </div>
           </div>
         </div>

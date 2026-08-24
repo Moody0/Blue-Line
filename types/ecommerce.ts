@@ -307,6 +307,13 @@ export interface FooterContent {
   column_services?: FooterColumn;
 }
 
+export interface NavLink {
+  id: string;
+  label: string;
+  href: string;
+  is_active: boolean;
+}
+
 export interface SiteSettings {
   announcement_bar: AnnouncementBarContent;
   hero_slides: HeroSlide[];
@@ -315,6 +322,7 @@ export interface SiteSettings {
   policies_content: PoliciesContent;
   store_contact: StoreContactContent;
   footer_content?: FooterContent;
+  nav_links?: NavLink[];
 }
 
 /* ═══════════════════════════════════════════════════════════════

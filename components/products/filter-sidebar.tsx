@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   ChevronUp,
@@ -62,6 +62,17 @@ export function FilterSidebar({
   });
 
   const [categorySearchQuery, setCategorySearchQuery] = useState("");
+  const activeCategoryRef = useRef<HTMLAnchorElement>(null);
+
+  // Auto-scroll active category into visible area
+  useEffect(() => {
+    if (activeCategoryRef.current) {
+      activeCategoryRef.current.scrollIntoView({
+        block: "nearest",
+        behavior: "smooth",
+      });
+    }
+  }, [activeCategorySlug]);
 
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -210,6 +221,7 @@ export function FilterSidebar({
               {/* All Products Option */}
               <Link
                 href="/products"
+                ref={isAllProductsActive ? activeCategoryRef : undefined}
                 className={cn(
                   "flex items-center justify-between py-1.5 px-2.5 rounded-lg font-bold transition-colors text-xs",
                   isAllProductsActive
@@ -230,6 +242,7 @@ export function FilterSidebar({
                   <Link
                     key={cat.slug}
                     href={`/category/${cat.slug}`}
+                    ref={isActive ? activeCategoryRef : undefined}
                     className={cn(
                       "flex items-center justify-between py-1.5 px-2.5 rounded-lg transition-colors text-[11px]",
                       isActive

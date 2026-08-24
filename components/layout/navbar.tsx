@@ -12,24 +12,32 @@ import { useFavorites } from "@/components/favorites/favorites-context";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
+import type { NavLink } from "@/types/ecommerce";
+
 interface NavbarProps {
   cartItemCount?: number;
   onOpenCart?: () => void;
+  navLinks?: NavLink[];
 }
 
-const MAIN_PAGES = [
-  { nameAr: "الرئيسية", href: "/" },
-  { nameAr: "جميع المنتجات", href: "/products" },
-  { nameAr: "قوانين الضمان", href: "/warranty" },
-  { nameAr: "تتبع طلبك", href: "/track-order" },
-  { nameAr: "الاستبدال والاسترجاع", href: "/returns" },
+const DEFAULT_MAIN_PAGES = [
+  { id: "nav-1", label: "الرئيسية", href: "/", is_active: true },
+  { id: "nav-2", label: "جميع المنتجات", href: "/products", is_active: true },
+  { id: "nav-3", label: "قوانين الضمان", href: "/warranty", is_active: true },
+  { id: "nav-4", label: "تتبع طلبك", href: "/track-order", is_active: true },
+  { id: "nav-5", label: "الاستبدال والاسترجاع", href: "/returns", is_active: true },
 ];
 
-export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
+export function Navbar({ cartItemCount, onOpenCart, navLinks }: NavbarProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
   const pathname = usePathname();
+
+  // Active navigation links (dynamic from CMS or fallback)
+  const displayLinks = (navLinks && navLinks.length > 0 ? navLinks : DEFAULT_MAIN_PAGES).filter(
+    (link) => link.is_active !== false
+  );
 
   // Access cart and favorites context
   const cart = useCart();
@@ -94,9 +102,9 @@ export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
               <Logo />
             </div>
 
-            {/* ── 2. Center (Desktop Only): Main Essential Pages Navigation ── */}
+            {/* ── 2. Center (Desktop Only): Dynamic Essential Pages Navigation ── */}
             <nav className="hidden lg:flex items-center gap-7 xl:gap-9 mx-auto">
-              {MAIN_PAGES.map((page) => {
+              {displayLinks.map((page) => {
                 const isActive =
                   page.href === "/"
                     ? pathname === "/"
@@ -113,7 +121,7 @@ export function Navbar({ cartItemCount, onOpenCart }: NavbarProps) {
                         : "text-text-secondary hover:text-brand-900"
                     )}
                   >
-                    <span>{page.nameAr}</span>
+                    <span>{page.label}</span>
                     <span
                       className={cn(
                         "absolute bottom-0 inset-x-0 h-0.5 bg-[#1E6091] transition-transform duration-300 ease-out",
