@@ -39,7 +39,10 @@ yarn-error.log*
 # vercel
 .vercel
 
-# screenshots
-localhost_*.png
-zad-land*.png
-logo.png
+# temporary root screenshots
+/localhost_*.png
+/zad-land*.png
+/logo.png
+
+# keep public assets
+!public/logo.png
