@@ -111,67 +111,6 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
           </Link>
         ))}
       </div>
-
-      {/* 2 Photographic Feature Banners */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 pt-2">
-        {/* Banner 1: Faucets */}
-        <div className="relative rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-[210px] sm:h-[240px] flex items-center group border border-border-default/50">
-          <Image
-            src="/images/promo/faucet-banner.jpg"
-            alt="خلاطات المغاسل وأحواض الحمام"
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover object-left-top sm:object-left"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F4F1EA]/70 to-[#F4F1EA]/95" />
-
-          <div className="relative z-10 max-w-[65%] sm:max-w-[60%] p-5 sm:p-8 flex flex-col justify-center items-start text-start space-y-2">
-            <span className="text-[11px] font-bold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-sm tracking-wider">
-              تشكيلات معتمدة
-            </span>
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-extrabold text-[#0B192C] leading-snug tracking-tight">
-              خلاطات المغاسل وأحواض الحمام
-            </h3>
-            <div className="pt-1.5">
-              <Link
-                href="/category/mixers-basins"
-                className="inline-flex items-center justify-center bg-[#1E6091] hover:bg-[#15486E] text-white font-bold py-2 px-6 rounded-xl text-xs uppercase tracking-wider transition-colors shadow-2xs"
-              >
-                تصفح التشكيلة
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Banner 2: Pressure Shower */}
-        <div className="relative rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-[210px] sm:h-[240px] flex items-center group border border-border-default/50">
-          <Image
-            src="/images/promo/shower-banner.jpg"
-            alt="سماعات الشاور والدش المطري"
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover object-left-top sm:object-left"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ECEEF0]/70 to-[#ECEEF0]/95" />
-
-          <div className="relative z-10 max-w-[65%] sm:max-w-[60%] p-5 sm:p-8 flex flex-col justify-center items-start text-start space-y-2">
-            <span className="text-[11px] font-bold text-[#1E6091] bg-blue-100/80 px-2 py-0.5 rounded-sm tracking-wider">
-              أنظمة سباكة ألمانية
-            </span>
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-extrabold text-[#0B192C] leading-snug tracking-tight">
-              سماعات الشاور والدش المطري
-            </h3>
-            <div className="pt-1.5">
-              <Link
-                href="/category/shower-bury"
-                className="inline-flex items-center justify-center bg-[#1E6091] hover:bg-[#15486E] text-white font-bold py-2 px-6 rounded-xl text-xs uppercase tracking-wider transition-colors shadow-2xs"
-              >
-                تصفح التشكيلة
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
     </section>
   );
 }
