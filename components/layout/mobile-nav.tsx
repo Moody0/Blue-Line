@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Phone, ShieldCheck, ChevronLeft, X, MessageCircle, User, LogOut, Truck } from "lucide-react";
 import { NAV_CATEGORIES, BRAND, CURRENCY, CONTACT } from "@/lib/constants";
+import type { Category } from "@/types/ecommerce";
 import { signOut } from "@/actions/auth";
 import { Logo } from "./logo";
 import {
@@ -16,9 +17,20 @@ interface MobileNavProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentUser?: { name: string; email: string } | null;
+  categories?: Category[];
 }
 
-export function MobileNav({ open, onOpenChange, currentUser }: MobileNavProps) {
+export function MobileNav({ open, onOpenChange, currentUser, categories }: MobileNavProps) {
+  const allCategories =
+    categories && categories.length > 0
+      ? categories
+      : NAV_CATEGORIES.map((c, i) => ({
+          id: `cat-${i}`,
+          name_ar: c.nameAr,
+          name_en: c.nameEn,
+          slug: c.slug,
+        }));
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
@@ -48,36 +60,37 @@ export function MobileNav({ open, onOpenChange, currentUser }: MobileNavProps) {
           {/* Navigation Category Links (100% Arabic) */}
           <nav className="p-4 space-y-4">
             <div>
-              <p className="text-xs font-extrabold text-brand-900 px-3 mb-2 tracking-wider">
-                أقسام المنتجات
+              <p className="text-xs font-extrabold text-brand-900 px-3 mb-2 tracking-wider flex items-center justify-between">
+                <span>أقسام المنتجات</span>
+                <span className="text-[10px] text-slate-400 font-bold">({allCategories.length})</span>
               </p>
-              <ul className="space-y-1">
+              <ul className="space-y-0.5 max-h-[44vh] overflow-y-auto pl-1 overscroll-contain">
                 <li>
                   <Link
                     href="/products"
                     onClick={() => onOpenChange(false)}
-                    className="flex items-center justify-between py-3 px-3.5 rounded-xl bg-surface-50 text-[#1E6091] font-bold text-xs transition-colors group"
+                    className="flex items-center justify-between py-2 px-3.5 rounded-xl bg-surface-50 text-[#1E6091] font-bold text-xs transition-colors group mb-1"
                   >
                     <span>جميع المنتجات والتشكيلات</span>
                     <ChevronLeft
-                      size={16}
+                      size={15}
                       className="text-[#1E6091] transition-transform group-hover:-translate-x-1"
                     />
                   </Link>
                 </li>
-                {NAV_CATEGORIES.map((cat) => (
-                  <li key={cat.slug}>
+                {allCategories.map((cat, idx) => (
+                  <li key={cat.id || `${cat.slug}-${idx}`}>
                     <Link
                       href={`/category/${cat.slug}`}
                       onClick={() => onOpenChange(false)}
-                      className="flex items-center justify-between py-3 px-3.5 rounded-xl text-text-secondary hover:text-brand-900 hover:bg-surface-50 font-bold text-xs transition-colors group"
+                      className="flex items-center justify-between py-2 px-3.5 rounded-xl text-text-secondary hover:text-brand-900 hover:bg-surface-50 font-bold text-xs transition-colors group"
                     >
-                      <span className="group-hover:text-brand-900">
-                        {cat.nameAr}
+                      <span className="group-hover:text-brand-900 truncate">
+                        {cat.name_ar}
                       </span>
                       <ChevronLeft
-                        size={16}
-                        className="text-text-muted group-hover:text-accent-600 transition-transform group-hover:-translate-x-1"
+                        size={15}
+                        className="text-text-muted group-hover:text-accent-600 transition-transform group-hover:-translate-x-1 shrink-0"
                       />
                     </Link>
                   </li>

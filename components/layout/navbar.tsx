@@ -12,12 +12,13 @@ import { useFavorites } from "@/components/favorites/favorites-context";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-import type { NavLink } from "@/types/ecommerce";
+import type { NavLink, Category } from "@/types/ecommerce";
 
 interface NavbarProps {
   cartItemCount?: number;
   onOpenCart?: () => void;
   navLinks?: NavLink[];
+  categories?: Category[];
 }
 
 const DEFAULT_MAIN_PAGES = [
@@ -28,7 +29,7 @@ const DEFAULT_MAIN_PAGES = [
   { id: "nav-5", label: "الاستبدال والاسترجاع", href: "/returns", is_active: true },
 ];
 
-export function Navbar({ cartItemCount, onOpenCart, navLinks }: NavbarProps) {
+export function Navbar({ cartItemCount, onOpenCart, navLinks, categories }: NavbarProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
@@ -202,11 +203,11 @@ export function Navbar({ cartItemCount, onOpenCart, navLinks }: NavbarProps) {
                 </span>
               </button>
 
-              {/* Mobile Hamburger Button (Opens all categories & deep links) */}
+              {/* Mobile Hamburger Button (Opens all categories & deep links on Mobile/Tablet only) */}
               <button
                 type="button"
                 onClick={() => setMobileNavOpen(true)}
-                className="p-2 text-brand-900 hover:bg-surface-100 rounded-full transition-colors cursor-pointer"
+                className="lg:hidden p-2 text-brand-900 hover:bg-surface-100 rounded-full transition-colors cursor-pointer"
                 aria-label="فتح قائمة الأقسام والتصنيفات"
               >
                 <Menu size={22} />
@@ -222,11 +223,12 @@ export function Navbar({ cartItemCount, onOpenCart, navLinks }: NavbarProps) {
         onClose={() => setSearchModalOpen(false)}
       />
 
-      {/* ── All Categories & Navigation Drawer ── */}
+      {/* ── All Categories & Navigation Drawer (Mobile only) ── */}
       <MobileNav
         open={mobileNavOpen}
         onOpenChange={setMobileNavOpen}
         currentUser={currentUser}
+        categories={categories}
       />
     </>
   );

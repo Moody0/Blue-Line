@@ -7,20 +7,24 @@ import { CartDrawer } from "@/components/cart/cart-drawer";
 import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
 
 import { getSiteSettings } from "@/actions/settings";
+import { getCategories } from "@/actions/catalog";
 
 export default async function ShopLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const settings = await getSiteSettings();
+  const [settings, categories] = await Promise.all([
+    getSiteSettings(),
+    getCategories(),
+  ]);
 
   return (
     <CartProvider>
       <FavoritesProvider>
         <div className="flex min-h-screen flex-col bg-surface-white text-text-primary pb-16 md:pb-0">
           <AnnouncementBar />
-          <Navbar navLinks={settings.nav_links} />
+          <Navbar navLinks={settings.nav_links} categories={categories} />
           <main className="flex-1">{children}</main>
           <Footer />
           <CartDrawer />
