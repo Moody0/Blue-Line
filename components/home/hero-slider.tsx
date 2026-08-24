@@ -115,7 +115,7 @@ export function HeroSlider({ slides }: HeroSliderProps) {
           <div className="pt-2 sm:pt-4">
             <Link
               href={slide.ctaHref || "/products"}
-              className="inline-block bg-white text-black hover:bg-neutral-100 font-bold px-10 py-3.5 text-xs sm:text-sm tracking-wider uppercase transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+              className="inline-block bg-white text-black hover:bg-neutral-100 font-bold px-10 py-3.5 text-xs sm:text-sm tracking-wider uppercase transition-colors duration-200 shadow-md hover:shadow-lg"
             >
               {slide.ctaText}
             </Link>
@@ -128,7 +128,7 @@ export function HeroSlider({ slides }: HeroSliderProps) {
         type="button"
         onClick={scrollLeft}
         aria-label="السابق"
-        className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white text-black shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 z-20 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto cursor-pointer"
+        className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white text-black shadow-lg flex items-center justify-center transition-colors duration-300 hover:bg-neutral-100 z-20 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto cursor-pointer"
       >
         <ArrowLeft size={18} strokeWidth={2} />
       </button>
@@ -138,7 +138,7 @@ export function HeroSlider({ slides }: HeroSliderProps) {
         type="button"
         onClick={scrollRight}
         aria-label="التالي"
-        className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white text-black shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 z-20 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto cursor-pointer"
+        className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white text-black shadow-lg flex items-center justify-center transition-colors duration-300 hover:bg-neutral-100 z-20 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto cursor-pointer"
       >
         <ArrowRight size={18} strokeWidth={2} />
       </button>

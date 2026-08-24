@@ -93,7 +93,7 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
                 alt={item.name_ar}
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                className="object-cover transition-opacity duration-300"
               />
               {/* Refined Bottom Gradient */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent transition-opacity duration-300 group-hover:from-black/90" />
@@ -121,7 +121,7 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
             alt="خلاطات المغاسل وأحواض الحمام"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover object-left-top sm:object-left transition-transform duration-700 ease-out group-hover:scale-105"
+            className="object-cover object-left-top sm:object-left"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F4F1EA]/70 to-[#F4F1EA]/95" />
 
@@ -135,7 +135,7 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
             <div className="pt-1.5">
               <Link
                 href="/category/mixers-basins"
-                className="inline-flex items-center justify-center bg-[#1E6091] hover:bg-[#15486E] text-white font-bold py-2 px-6 rounded-xl text-xs uppercase tracking-wider transition-all shadow-2xs hover:scale-105"
+                className="inline-flex items-center justify-center bg-[#1E6091] hover:bg-[#15486E] text-white font-bold py-2 px-6 rounded-xl text-xs uppercase tracking-wider transition-colors shadow-2xs"
               >
                 تصفح التشكيلة
               </Link>
@@ -150,7 +150,7 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
             alt="سماعات الشاور والدش المطري"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover object-left-top sm:object-left transition-transform duration-700 ease-out group-hover:scale-105"
+            className="object-cover object-left-top sm:object-left"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ECEEF0]/70 to-[#ECEEF0]/95" />
 
@@ -164,7 +164,7 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
             <div className="pt-1.5">
               <Link
                 href="/category/shower-bury"
-                className="inline-flex items-center justify-center bg-[#1E6091] hover:bg-[#15486E] text-white font-bold py-2 px-6 rounded-xl text-xs uppercase tracking-wider transition-all shadow-2xs hover:scale-105"
+                className="inline-flex items-center justify-center bg-[#1E6091] hover:bg-[#15486E] text-white font-bold py-2 px-6 rounded-xl text-xs uppercase tracking-wider transition-colors shadow-2xs"
               >
                 تصفح التشكيلة
               </Link>

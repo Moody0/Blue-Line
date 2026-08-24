@@ -98,7 +98,7 @@ export function ProductCard({
                 alt={product.title_ar}
                 fill
                 sizes="(max-width: 640px) 120px, 240px"
-                className="object-contain scale-105 transition-transform duration-500 ease-out group-hover:scale-115 p-1"
+                className="object-contain p-1.5 transition-opacity duration-300"
               />
             ) : (
               <ProductVisual
@@ -135,10 +135,10 @@ export function ProductCard({
                     title={v.finish_name}
                     aria-label={v.finish_name}
                     className={cn(
-                      "w-3 h-3 rounded-full border border-black/25 transition-all cursor-pointer",
+                      "w-3 h-3 rounded-full border border-black/25 transition-colors cursor-pointer",
                       isSelected
-                        ? "ring-2 ring-[#1E6091] ring-offset-1 scale-110 shadow-xs"
-                        : "opacity-75 hover:opacity-100 hover:scale-105"
+                        ? "ring-2 ring-[#1E6091] ring-offset-1 shadow-xs"
+                        : "opacity-75 hover:opacity-100"
                     )}
                     style={{ backgroundColor: v.hex_color || "#D4D4D8" }}
                   />
@@ -148,13 +148,13 @@ export function ProductCard({
           )}
 
           {/* Quick Action Buttons (Desktop only on hover) */}
-          <div className="hidden sm:flex absolute top-2 end-2 flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0 z-20">
+          <div className="hidden sm:flex absolute top-2 end-2 flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
             <button
               type="button"
               onClick={toggleWishlist}
               aria-label="إضافة للمفضلة"
               className={cn(
-                "w-7 h-7 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center transition-all hover:scale-110 cursor-pointer",
+                "w-7 h-7 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center transition-colors hover:bg-surface-100 cursor-pointer",
                 isWishlisted
                   ? "text-destructive bg-destructive/10 border-destructive/30"
                   : "text-text-secondary hover:text-brand-900"
@@ -170,7 +170,7 @@ export function ProductCard({
                 setQuickViewOpen(true);
               }}
               aria-label="معاينة سريعة للمنتج"
-              className="w-7 h-7 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center text-text-secondary hover:text-brand-900 transition-all hover:scale-110 cursor-pointer"
+              className="w-7 h-7 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center text-text-secondary hover:text-brand-900 transition-colors hover:bg-surface-100 cursor-pointer"
             >
               <Eye size={14} />
             </button>
@@ -263,7 +263,7 @@ export function ProductCard({
               alt={product.title_ar}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-contain scale-110 sm:scale-118 transition-transform duration-500 ease-out group-hover:scale-125 p-1"
+              className="object-contain p-2 transition-opacity duration-300"
             />
           ) : (
             <ProductVisual
@@ -299,10 +299,10 @@ export function ProductCard({
                   title={v.finish_name}
                   aria-label={v.finish_name}
                   className={cn(
-                    "w-3.5 h-3.5 rounded-full border border-black/25 transition-all cursor-pointer",
+                    "w-3.5 h-3.5 rounded-full border border-black/25 transition-colors cursor-pointer",
                     isSelected
-                      ? "ring-2 ring-[#1E6091] ring-offset-1 scale-110 shadow-xs"
-                      : "opacity-75 hover:opacity-100 hover:scale-105"
+                      ? "ring-2 ring-[#1E6091] ring-offset-1 shadow-xs"
+                      : "opacity-75 hover:opacity-100"
                   )}
                   style={{ backgroundColor: v.hex_color || "#D4D4D8" }}
                 />
@@ -312,14 +312,14 @@ export function ProductCard({
         )}
 
         {/* Floating Action Buttons on Hover (Top-Right Stack) */}
-        <div className="absolute top-3 end-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0 z-20">
+        <div className="absolute top-3 end-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
           {/* Wishlist Button */}
           <button
             type="button"
             onClick={toggleWishlist}
             aria-label="إضافة للمفضلة"
             className={cn(
-              "w-9 h-9 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center transition-all hover:scale-110 cursor-pointer",
+              "w-9 h-9 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center transition-colors hover:bg-surface-100 cursor-pointer",
               isWishlisted
                 ? "text-destructive bg-destructive/10 border-destructive/30"
                 : "text-text-secondary hover:text-brand-900"
@@ -334,7 +334,7 @@ export function ProductCard({
             onClick={handleQuickAdd}
             aria-label="إضافة سريعة للسلة"
             className={cn(
-              "w-9 h-9 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center transition-all hover:scale-110 cursor-pointer",
+              "w-9 h-9 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center transition-colors hover:bg-surface-100 cursor-pointer",
               isJustAdded
                 ? "bg-emerald-600 text-white border-emerald-600"
                 : "text-text-secondary hover:text-brand-900"
@@ -352,7 +352,7 @@ export function ProductCard({
               setQuickViewOpen(true);
             }}
             aria-label="معاينة سريعة للمنتج"
-            className="w-9 h-9 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center text-text-secondary hover:text-brand-900 transition-all hover:scale-110 cursor-pointer"
+            className="w-9 h-9 rounded-full bg-white shadow-md border border-border-default flex items-center justify-center text-text-secondary hover:text-brand-900 transition-colors hover:bg-surface-100 cursor-pointer"
           >
             <Eye size={16} />
           </button>

@@ -56,7 +56,7 @@ export function TopRatedProducts({ products }: TopRatedProductsProps) {
           type="button"
           onClick={() => scrollInDirection("right")}
           aria-label="التمرير لليمين"
-          className="absolute -start-3 sm:-start-5 top-[35%] -translate-y-1/2 w-11 h-11 rounded-full bg-white border border-border-default shadow-elevated hover:bg-surface-50 text-brand-900 flex items-center justify-center transition-all duration-300 opacity-0 group-hover/section:opacity-100 hover:scale-110 z-20 cursor-pointer"
+          className="absolute -start-3 sm:-start-5 top-[35%] -translate-y-1/2 w-11 h-11 rounded-full bg-white border border-border-default shadow-elevated hover:bg-surface-50 text-brand-900 flex items-center justify-center transition-colors duration-300 opacity-0 group-hover/section:opacity-100 z-20 cursor-pointer"
         >
           <ChevronRight size={22} />
         </button>
@@ -66,7 +66,7 @@ export function TopRatedProducts({ products }: TopRatedProductsProps) {
           type="button"
           onClick={() => scrollInDirection("left")}
           aria-label="التمرير لليسار"
-          className="absolute -end-3 sm:-end-5 top-[35%] -translate-y-1/2 w-11 h-11 rounded-full bg-white border border-border-default shadow-elevated hover:bg-surface-50 text-brand-900 flex items-center justify-center transition-all duration-300 opacity-0 group-hover/section:opacity-100 hover:scale-110 z-20 cursor-pointer"
+          className="absolute -end-3 sm:-end-5 top-[35%] -translate-y-1/2 w-11 h-11 rounded-full bg-white border border-border-default shadow-elevated hover:bg-surface-50 text-brand-900 flex items-center justify-center transition-colors duration-300 opacity-0 group-hover/section:opacity-100 z-20 cursor-pointer"
         >
           <ChevronLeft size={22} />
         </button>
