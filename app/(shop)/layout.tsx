@@ -5,6 +5,7 @@ import { CartProvider } from "@/components/cart/cart-context";
 import { FavoritesProvider } from "@/components/favorites/favorites-context";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
+import { ScrollToTop } from "@/components/layout/scroll-to-top";
 
 import { getSiteSettings } from "@/actions/settings";
 import { getCategories } from "@/actions/catalog";
@@ -29,6 +30,7 @@ export default async function ShopLayout({
           <Footer />
           <CartDrawer />
           <MobileBottomBar />
+          <ScrollToTop />
         </div>
       </FavoritesProvider>
     </CartProvider>
