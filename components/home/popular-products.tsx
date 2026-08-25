@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import type { Product } from "@/types/ecommerce";
 import { cn } from "@/lib/utils";
@@ -10,20 +10,42 @@ interface PopularProductsProps {
   products: Product[];
 }
 
-type TabType = "all" | "new" | "featured" | "bestseller";
+type TabType = "all" | "featured" | "bestseller";
 
 const TABS: { id: TabType; labelAr: string }[] = [
-  { id: "all", labelAr: "وصل حديثاً" },
-  { id: "featured", labelAr: "المميزة" },
   { id: "bestseller", labelAr: "الأكثر مبيعاً" },
+  { id: "featured", labelAr: "المميزة" },
+  { id: "all", labelAr: "وصل حديثاً" },
 ];
 
 export function PopularProducts({ products }: PopularProductsProps) {
   const [activeTab, setActiveTab] = useState<TabType>("bestseller");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Show max 8 curated products
-  const displayProducts = products.slice(0, 8);
+  // Dynamic filter according to active tab
+  const displayProducts = useMemo(() => {
+    if (!products || products.length === 0) return [];
+
+    let filtered: Product[] = [];
+    if (activeTab === "featured") {
+      filtered = products.filter((p) => p.is_featured);
+      if (filtered.length === 0) filtered = products;
+    } else if (activeTab === "all") {
+      // New arrivals: sort by created_at desc
+      filtered = [...products].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    } else {
+      // Best sellers: products with discount or high demand
+      filtered = [...products].sort((a, b) => {
+        const aScore = (a.discount_price ? 2 : 0) + (a.is_featured ? 1 : 0);
+        const bScore = (b.discount_price ? 2 : 0) + (b.is_featured ? 1 : 0);
+        return bScore - aScore;
+      });
+    }
+
+    return filtered.slice(0, 8);
+  }, [products, activeTab]);
 
   // Scroll smoothly in the requested screen direction
   const scrollInDirection = (direction: "right" | "left") => {
@@ -47,7 +69,7 @@ export function PopularProducts({ products }: PopularProductsProps) {
   };
 
   return (
-    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 group/section relative cv-auto" dir="rtl">
+    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 group/section relative cv-auto font-alexandria" dir="rtl">
       {/* Section Header with Centered Title & Tabs */}
       <div className="text-center space-y-4">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
