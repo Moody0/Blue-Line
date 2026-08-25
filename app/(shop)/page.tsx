@@ -52,16 +52,19 @@ export default async function HomePage() {
         newArrivalProducts={newArrivalProducts}
       />
 
-      {/* 4. Deal Of The Week — with Red Countdown Timer */}
-      <DealsSection products={dealProducts} />
-
-      {/* 5. Cinematic Parallax Architectural Product Spotlight */}
+      {/* 4. Cinematic Parallax Architectural Product Spotlight */}
       <ParallaxBanner />
 
-      {/* 6. Top Rated Architectural Fixtures */}
+      {/* 5. Top Rated Architectural Fixtures */}
       <TopRatedProducts products={topRatedProducts} />
 
-      {/* 7. Highest Quality Service — 4 Detailed Pillars from CMS */}
+      {/* 6. Deal Of The Week — Configurable from CMS with Red Countdown Timer */}
+      <DealsSection
+        products={dealProducts}
+        dealsSettings={siteSettings.deals_section}
+      />
+
+      {/* 7. Highest Quality Service — 4 Detailed Pillars (Horizontal Carousel on Mobile) */}
       <ServicePillars pillars={siteSettings.service_pillars} />
     </div>
   );

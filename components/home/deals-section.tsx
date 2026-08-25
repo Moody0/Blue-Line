@@ -1,19 +1,35 @@
 "use client";
 
 import { useRef } from "react";
-import { ChevronRight, ChevronLeft } from "lucide-react";
-import type { Product } from "@/types/ecommerce";
+import { ChevronRight, ChevronLeft, Flame } from "lucide-react";
+import type { Product, DealsSectionContent } from "@/types/ecommerce";
 import { ProductCard } from "@/components/products/product-card";
 
 interface DealsSectionProps {
   products: Product[];
+  dealsSettings?: DealsSectionContent;
 }
 
-export function DealsSection({ products }: DealsSectionProps) {
+export function DealsSection({ products, dealsSettings }: DealsSectionProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // If section is disabled via CMS settings, return null
+  if (dealsSettings && dealsSettings.is_active === false) {
+    return null;
+  }
 
   // Show max 8 deal products
   const displayProducts = products.slice(0, 8);
+  if (displayProducts.length === 0) {
+    return null;
+  }
+
+  const title = dealsSettings?.title_ar || "عروض الأسبوع الحصرية";
+  const subtitle =
+    dealsSettings?.subtitle_ar ||
+    "تخفيضات استثنائية على تشكيلات مختارة لفترة زمنية محدودة";
+  const badgeText = dealsSettings?.badge_text_ar || "عروض حصرية";
+  const endDate = dealsSettings?.end_date;
 
   // Scroll smoothly by exactly 1 card in requested screen direction
   const scrollInDirection = (direction: "right" | "left") => {
@@ -37,14 +53,18 @@ export function DealsSection({ products }: DealsSectionProps) {
   };
 
   return (
-    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 group/section relative cv-auto" dir="rtl">
+    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 group/section relative cv-auto font-alexandria" dir="rtl">
       {/* Section Header */}
       <div className="text-center space-y-2">
+        <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 border border-red-200/60 shadow-2xs text-xs font-black tracking-wider uppercase">
+          <Flame size={14} className="fill-current text-red-500 animate-pulse" />
+          <span>{badgeText}</span>
+        </div>
         <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
-          عروض الأسبوع الحصرية
+          {title}
         </h2>
         <p className="text-xs sm:text-sm font-semibold text-text-muted">
-          تخفيضات استثنائية على تشكيلات مختارة لفترة زمنية محدودة
+          {subtitle}
         </p>
       </div>
 
@@ -79,6 +99,8 @@ export function DealsSection({ products }: DealsSectionProps) {
             <ProductCard
               key={product.id}
               product={product}
+              showCountdown={true}
+              countdownEndDate={endDate}
               className="w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)]"
             />
           ))}

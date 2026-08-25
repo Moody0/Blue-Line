@@ -56,7 +56,7 @@ export function ServicePillars({ pillars }: ServicePillarsProps) {
   const currentPillars = pillars && pillars.length > 0 ? pillars : DEFAULT_PILLARS;
 
   return (
-    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 cv-auto font-alexandria" dir="rtl">
+    <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 cv-auto font-alexandria" dir="rtl">
       {/* Section Title */}
       <div className="text-center space-y-2">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
@@ -67,31 +67,31 @@ export function ServicePillars({ pillars }: ServicePillarsProps) {
         </p>
       </div>
 
-      {/* 4 Round Pillars Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 items-start justify-items-center">
+      {/* 4 Round Pillars: Horizontal Swipeable Carousel on Mobile, Grid on Tablet/Desktop */}
+      <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 overflow-x-auto sm:overflow-visible snap-x snap-mandatory scroll-smooth no-scrollbar pb-4 sm:pb-0 px-2 sm:px-0 items-start justify-start sm:justify-items-center">
         {currentPillars.map((pillar, idx) => {
           const Icon = ICON_MAP[pillar.iconName] || Droplets;
 
           return (
             <div
               key={pillar.id || idx}
-              className="group flex flex-col items-center text-center space-y-4 max-w-[260px] cursor-pointer"
+              className="shrink-0 snap-center min-w-[220px] sm:min-w-0 max-w-[260px] group flex flex-col items-center text-center space-y-4 cursor-pointer"
             >
               {/* Circular Badge with Instant Color Change and No Scale Growth */}
-              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-[#ECEFF2] group-hover:bg-[#1E6091] flex items-center justify-center shadow-2xs">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-[#ECEFF2] group-hover:bg-[#1E6091] flex items-center justify-center shadow-2xs transition-colors duration-200">
                 <Icon
-                  size={46}
+                  size={38}
                   strokeWidth={1.4}
-                  className="text-[#1E6091] group-hover:text-white"
+                  className="text-[#1E6091] group-hover:text-white transition-colors duration-200 sm:w-[46px] sm:h-[46px]"
                 />
               </div>
 
               {/* Title & Description */}
-              <div className="space-y-1.5">
-                <h3 className="text-sm sm:text-base font-bold text-brand-900 group-hover:text-[#1E6091] leading-snug">
+              <div className="space-y-1.5 px-2">
+                <h3 className="text-xs sm:text-base font-bold text-brand-900 group-hover:text-[#1E6091] leading-snug">
                   {pillar.titleAr}
                 </h3>
-                <p className="text-xs text-text-secondary leading-relaxed font-normal">
+                <p className="text-[11px] sm:text-xs text-text-secondary leading-relaxed font-normal">
                   {pillar.descriptionAr}
                 </p>
               </div>

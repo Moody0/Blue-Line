@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, Heart, Eye, ShoppingBag, Check } from "lucide-react";
+import { Star, Heart, Eye, ShoppingBag, Check, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/formatters";
 import { useCart } from "@/components/cart/cart-context";
@@ -16,18 +16,54 @@ interface ProductCardProps {
   product: Product;
   viewMode?: "grid" | "list";
   className?: string;
+  showCountdown?: boolean;
+  countdownEndDate?: string;
 }
 
 export function ProductCard({
   product,
   viewMode = "grid",
   className,
+  showCountdown = false,
+  countdownEndDate,
 }: ProductCardProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const isWishlisted = isFavorite(product.id);
   const [isJustAdded, setIsJustAdded] = useState(false);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const { addItem } = useCart();
+
+  // Live Red Countdown Timer
+  const [timeLeft, setTimeLeft] = useState<{
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }>({ days: 16, hours: 19, minutes: 55, seconds: 57 });
+
+  useEffect(() => {
+    if (!showCountdown) return;
+
+    const target = countdownEndDate
+      ? new Date(countdownEndDate).getTime()
+      : new Date(Date.now() + 16 * 86400000 + 19 * 3600000 + 55 * 60000 + 57000).getTime();
+
+    const updateTimer = () => {
+      const now = Date.now();
+      const diff = Math.max(0, target - now);
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setTimeLeft({ days, hours, minutes, seconds });
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [showCountdown, countdownEndDate]);
 
   const variants = product.variants ?? [];
   const defaultVariant = variants.find((v) => v.is_default) ?? variants[0];
@@ -357,6 +393,19 @@ export function ProductCard({
             <Eye size={16} />
           </button>
         </div>
+
+        {/* Live Red Countdown Timer Bar from Screenshot */}
+        {showCountdown && (
+          <div
+            className="absolute bottom-2.5 inset-x-3 flex items-center justify-center gap-1.5 py-1 px-2 rounded-lg bg-white/95 backdrop-blur-xs border border-red-200/80 shadow-2xs z-10"
+            dir="ltr"
+          >
+            <Clock size={13} className="text-red-600 shrink-0" />
+            <span className="text-[11px] sm:text-xs font-black text-red-600 font-mono tracking-wider">
+              {String(timeLeft.days).padStart(2, "0")} : {String(timeLeft.hours).padStart(2, "0")} : {String(timeLeft.minutes).padStart(2, "0")} : {String(timeLeft.seconds).padStart(2, "0")}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Product Meta & Details Below Image in Arabic */}

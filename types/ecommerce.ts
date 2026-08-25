@@ -314,10 +314,19 @@ export interface NavLink {
   is_active: boolean;
 }
 
+export interface DealsSectionContent {
+  title_ar: string;
+  subtitle_ar: string;
+  badge_text_ar?: string;
+  end_date?: string;
+  is_active: boolean;
+}
+
 export interface SiteSettings {
   announcement_bar: AnnouncementBarContent;
   hero_slides: HeroSlide[];
   service_pillars: ServicePillar[];
+  deals_section?: DealsSectionContent;
   warranty_content: WarrantyContent;
   policies_content: PoliciesContent;
   store_contact: StoreContactContent;

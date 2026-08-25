@@ -27,11 +27,13 @@ import {
   LayoutTemplate,
   Link as LinkIcon,
   ListTree,
+  Flame,
 } from "lucide-react";
 import type {
   SiteSettings,
   HeroSlide,
   ServicePillar,
+  DealsSectionContent,
   WarrantyContent,
   PoliciesContent,
   AnnouncementBarContent,
@@ -89,7 +91,9 @@ const DEFAULT_NAV_LINKS: NavLink[] = [
 ];
 
 export function CmsContentView({ initialSettings }: CmsContentViewProps) {
-  const [activeTab, setActiveTab] = useState<"hero" | "pillars" | "policies" | "announcement" | "footer" | "navbar">("hero");
+  const [activeTab, setActiveTab] = useState<
+    "hero" | "deals" | "pillars" | "policies" | "announcement" | "footer" | "navbar"
+  >("hero");
   const [policySubTab, setPolicySubTab] = useState<"warranty" | "returns" | "shipping" | "privacy" | "terms">("warranty");
 
   const [isPending, startTransition] = useTransition();
@@ -99,6 +103,15 @@ export function CmsContentView({ initialSettings }: CmsContentViewProps) {
   // Form State
   const [navLinks, setNavLinks] = useState<NavLink[]>(initialSettings.nav_links || DEFAULT_NAV_LINKS);
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(initialSettings.hero_slides || []);
+  const [dealsSection, setDealsSection] = useState<DealsSectionContent>(
+    initialSettings.deals_section || {
+      title_ar: "عروض الأسبوع الحصرية",
+      subtitle_ar: "تخفيضات استثنائية على تشكيلات مختارة لفترة زمنية محدودة",
+      badge_text_ar: "عروض خاصة",
+      end_date: "2026-09-01T23:59:59Z",
+      is_active: true,
+    }
+  );
   const [servicePillars, setServicePillars] = useState<ServicePillar[]>(initialSettings.service_pillars || []);
   const [warrantyContent, setWarrantyContent] = useState<WarrantyContent>(
     initialSettings.warranty_content || {
@@ -164,6 +177,14 @@ export function CmsContentView({ initialSettings }: CmsContentViewProps) {
       const res = await updateSiteSettings("hero_slides", heroSlides);
       if (res.success) showNotification("تم حفظ لافتات الصفحة الرئيسية بنجاح!");
       else setErrorMessage(res.error || "حدث خطأ أثناء الحفظ");
+    });
+  };
+
+  const handleSaveDeals = () => {
+    startTransition(async () => {
+      const res = await updateSiteSettings("deals_section", dealsSection);
+      if (res.success) showNotification("تم حفظ إعدادات عروض الأسبوع بنجاح!");
+      else setErrorMessage(res.error || "حدث خطأ أثناء حفظ إعدادات العروض");
     });
   };
 
@@ -406,6 +427,23 @@ export function CmsContentView({ initialSettings }: CmsContentViewProps) {
           <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">
             {heroSlides.length}
           </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("deals")}
+          className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === "deals"
+              ? "border-[#1E6091] text-[#1E6091] bg-slate-50/50"
+              : "border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300"
+          }`}
+        >
+          <Flame size={15} className="text-red-500" />
+          <span>عروض الأسبوع (Deal of The Week)</span>
+          {dealsSection.is_active ? (
+            <span className="w-2 h-2 rounded-full bg-emerald-500" title="مفعل" />
+          ) : (
+            <span className="w-2 h-2 rounded-full bg-slate-300" title="معطل" />
+          )}
         </button>
 
         <button
@@ -674,7 +712,161 @@ export function CmsContentView({ initialSettings }: CmsContentViewProps) {
         </div>
       )}
 
-      {/* ── 4. Tab 2: Service Pillars / Trust Badges ── */}
+      {/* ── 3. Tab: Deals of the Week (عروض الأسبوع) ── */}
+      {activeTab === "deals" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                <Flame size={16} className="text-red-500" />
+                <span>إعدادات عروض الأسبوع الحصرية (Deal of The Week)</span>
+              </h2>
+              <p className="text-[11px] text-slate-400">
+                التحكم في عنوان ووصف وقفل وتاريخ العداد التنازلي للقسم المعروض أسفل الصفحة الرئيسية
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSaveDeals}
+              disabled={isPending}
+              className="px-5 h-9 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              <Save size={14} />
+              <span>{isPending ? "جاري الحفظ..." : "حفظ إعدادات العروض"}</span>
+            </button>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-6">
+            {/* Active Toggle */}
+            <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-200/60">
+              <div className="space-y-0.5">
+                <span className="text-xs font-bold text-slate-900 block">
+                  تفعيل وإظهار قسم عروض الأسبوع في الصفحة الرئيسية
+                </span>
+                <span className="text-[11px] text-slate-500">
+                  عند التعطيل، سيتم إخفاء القسم بالكامل من واجهة المتجر
+                </span>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={dealsSection.is_active}
+                  onChange={(e) =>
+                    setDealsSection({
+                      ...dealsSection,
+                      is_active: e.target.checked,
+                    })
+                  }
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1E6091]"></div>
+              </label>
+            </div>
+
+            {/* Inputs Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700 block">
+                  عنوان القسم باللغة العربية (Title)
+                </label>
+                <Input
+                  value={dealsSection.title_ar}
+                  onChange={(e) =>
+                    setDealsSection({
+                      ...dealsSection,
+                      title_ar: e.target.value,
+                    })
+                  }
+                  placeholder="عروض الأسبوع الحصرية"
+                  className="h-10 text-xs bg-slate-50"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700 block">
+                  شارة التميز العلوية (Badge Text)
+                </label>
+                <Input
+                  value={dealsSection.badge_text_ar || ""}
+                  onChange={(e) =>
+                    setDealsSection({
+                      ...dealsSection,
+                      badge_text_ar: e.target.value,
+                    })
+                  }
+                  placeholder="عروض حصرية أو تخفيضات الأسبوع"
+                  className="h-10 text-xs bg-slate-50"
+                />
+              </div>
+
+              <div className="space-y-1 md:col-span-2">
+                <label className="font-bold text-slate-700 block">
+                  الوصف التوضيحي للقسم (Subtitle)
+                </label>
+                <Input
+                  value={dealsSection.subtitle_ar}
+                  onChange={(e) =>
+                    setDealsSection({
+                      ...dealsSection,
+                      subtitle_ar: e.target.value,
+                    })
+                  }
+                  placeholder="تخفيضات استثنائية على تشكيلات مختارة لفترة زمنية محدودة"
+                  className="h-10 text-xs bg-slate-50"
+                />
+              </div>
+
+              <div className="space-y-1 md:col-span-2">
+                <label className="font-bold text-slate-700 block">
+                  تاريخ وساعة انتهاء العداد التنازلي (Countdown End Date / Time)
+                </label>
+                <Input
+                  type="datetime-local"
+                  value={
+                    dealsSection.end_date
+                      ? new Date(dealsSection.end_date)
+                          .toISOString()
+                          .slice(0, 16)
+                      : ""
+                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setDealsSection({
+                      ...dealsSection,
+                      end_date: val ? new Date(val).toISOString() : undefined,
+                    });
+                  }}
+                  className="h-10 text-xs font-mono bg-slate-50"
+                  dir="ltr"
+                />
+                <span className="text-[10px] text-slate-400 block pt-0.5">
+                  يتم حساب الأيام والساعات والدقائق والثواني تلقائياً وإظهارها باللون الأحمر أسفل كل بطاقة منتج
+                </span>
+              </div>
+            </div>
+
+            {/* Visual Live Preview */}
+            <div className="p-5 rounded-xl bg-slate-50 border border-slate-200/80 text-center space-y-2">
+              <span className="text-[10px] font-bold text-slate-400 block uppercase">
+                معاينة عنوان وشارة القسم في واجهة المتجر
+              </span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 border border-red-200/60 text-xs font-black">
+                <Flame size={13} className="fill-current text-red-500" />
+                <span>{dealsSection.badge_text_ar || "عروض حصرية"}</span>
+              </div>
+              <h3 className="text-lg font-extrabold text-slate-900">
+                {dealsSection.title_ar || "عروض الأسبوع الحصرية"}
+              </h3>
+              <p className="text-xs text-slate-500 max-w-md mx-auto">
+                {dealsSection.subtitle_ar || "الوصف التوضيحي سيظهر هنا"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 4. Tab: Service Pillars / Trust Badges ── */}
       {activeTab === "pillars" && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">

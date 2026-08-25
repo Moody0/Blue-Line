@@ -58,6 +58,13 @@
       "iconName": "Truck"
     }
   ],
+  "deals_section": {
+    "title_ar": "عروض الأسبوع الحصرية",
+    "subtitle_ar": "تخفيضات استثنائية على تشكيلات مختارة لفترة زمنية محدودة",
+    "badge_text_ar": "عروض خاصة",
+    "end_date": "2026-09-01T23:59:59Z",
+    "is_active": true
+  },
   "warranty_content": {
     "titleAr": "الضمان وخدمات ما بعد البيع",
     "subtitleAr": "كافة خلاطات المياه والأدوات الصحية ومستلزمات السباكة المعتمدة لدى بلو لاين أصلية ومشمولة بضمان رسمي معتمد ضد عيوب الصناعة والتسريب.",
@@ -118,22 +125,90 @@
     "column_categories": {
       "title": "أقسام المنتجات",
       "links": [
-        { "label": "خلاطات أحواض الحمام", "href": "/category/mixers-basins" },
-        { "label": "أنظمة دش مطري وشاور دفن", "href": "/category/shower-bury" },
-        { "label": "خلاطات بانيو وشطافات", "href": "/category/bathtub-mixers" },
-        { "label": "أطقم ومحابس إيطالية", "href": "/category/valves-supplies" },
-        { "label": "جميع المنتجات والكتالوج", "href": "/products" }
+        {
+          "label": "خلاطات أحواض الحمام",
+          "href": "/category/mixers-basins"
+        },
+        {
+          "label": "أنظمة دش مطري وشاور دفن",
+          "href": "/category/shower-bury"
+        },
+        {
+          "label": "خلاطات بانيو وشطافات",
+          "href": "/category/bathtub-mixers"
+        },
+        {
+          "label": "أطقم ومحابس إيطالية",
+          "href": "/category/valves-supplies"
+        },
+        {
+          "label": "جميع المنتجات والكتالوج",
+          "href": "/products"
+        }
       ]
     },
     "column_services": {
       "title": "خدمات وضمانات",
       "links": [
-        { "label": "شهادة الضمان المعتمد والصيانة", "href": "/warranty" },
-        { "label": "سياسة الشحن والتوصيل للمحافظات", "href": "/shipping" },
-        { "label": "سياسة الاسترجاع والاستبدال (١٤ يوماً)", "href": "/returns" },
-        { "label": "تتبع حالة الشحنة والطلب", "href": "/track-order" },
-        { "label": "حسابي وسجل المشتريات", "href": "/account" }
+        {
+          "label": "شهادة الضمان المعتمد والصيانة",
+          "href": "/warranty"
+        },
+        {
+          "label": "سياسة الشحن والتوصيل للمحافظات",
+          "href": "/shipping"
+        },
+        {
+          "label": "سياسة الاسترجاع والاستبدال (١٤ يوماً)",
+          "href": "/returns"
+        },
+        {
+          "label": "تتبع حالة الشحنة والطلب",
+          "href": "/track-order"
+        },
+        {
+          "label": "حسابي وسجل المشتريات",
+          "href": "/account"
+        }
       ]
     }
-  }
+  },
+  "nav_links": [
+    {
+      "id": "nav-1",
+      "label": "الرئيسية",
+      "href": "/",
+      "is_active": true
+    },
+    {
+      "id": "nav-2",
+      "label": "جميع المنتجات",
+      "href": "/products",
+      "is_active": true
+    },
+    {
+      "id": "nav-3",
+      "label": "اجسام دفن",
+      "href": "/category/burial-objects",
+      "is_active": true
+    },
+    {
+      "id": "nav-4",
+      "label": "خلاطات احواض",
+      "href": "/category/mixers-basins",
+      "is_active": true
+    },
+    {
+      "id": "nav-5",
+      "label": "شاور دفن",
+      "href": "/category/shower-bury",
+      "is_active": true
+    },
+    {
+      "id": "nav-1787595509970",
+      "label": "خلاطات بانيو",
+      "href": "/category/bathtub-mixers",
+      "is_active": true
+    }
+  ]
 }
