@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Star, Heart, Eye, ShoppingBag, Check, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatPrice } from "@/lib/formatters";
+import { formatPrice, decodeHtmlEntities } from "@/lib/formatters";
 import { useCart } from "@/components/cart/cart-context";
 import { useFavorites } from "@/components/favorites/favorites-context";
 import { ProductVisual } from "./product-visual";
@@ -32,6 +32,8 @@ export function ProductCard({
   const [isJustAdded, setIsJustAdded] = useState(false);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const { addItem } = useCart();
+
+  const cleanTitleAr = decodeHtmlEntities(product.title_ar);
 
   // Live Red Countdown Timer
   const [timeLeft, setTimeLeft] = useState<{
@@ -109,9 +111,7 @@ export function ProductCard({
   };
 
   if (viewMode === "list") {
-    const cleanDescription = (product.description_ar || "")
-      .replace(/<[^>]*>?/gm, "")
-      .trim();
+    const cleanDescription = decodeHtmlEntities(product.description_ar || "");
 
     return (
       <article
@@ -126,15 +126,15 @@ export function ProductCard({
           <Link
             href={`/product/${product.slug}`}
             className="relative block w-full h-full overflow-hidden"
-            aria-label={product.title_ar}
+            aria-label={cleanTitleAr}
           >
             {primaryImage ? (
               <Image
                 src={primaryImage}
-                alt={product.title_ar}
+                alt={cleanTitleAr}
                 fill
                 sizes="(max-width: 640px) 120px, 240px"
-                className="object-contain p-1.5 transition-opacity duration-300"
+                className="object-contain mix-blend-multiply transition-opacity duration-300"
               />
             ) : (
               <ProductVisual
@@ -148,7 +148,7 @@ export function ProductCard({
           {/* Discount Badge on Top-Left */}
           {hasDiscount && (
             <span className="absolute top-2 start-2 bg-[#1E6091] text-white text-[10px] sm:text-[11px] font-bold px-1.5 py-0.2 rounded-xs z-10 shadow-2xs pointer-events-none">
-              -{discountPct}٪
+              -{discountPct}%
             </span>
           )}
 
@@ -234,12 +234,15 @@ export function ProductCard({
 
             {/* Title */}
             <Link href={`/product/${product.slug}`} className="block group/title">
-              <h3 className="text-xs sm:text-base font-bold text-brand-900 group-hover/title:text-[#1E6091] transition-colors leading-snug line-clamp-2">
-                {product.title_ar}
+              <h3
+                className="text-xs sm:text-base font-bold text-brand-900 group-hover/title:text-[#1E6091] transition-colors leading-snug line-clamp-2"
+                title={cleanTitleAr}
+              >
+                {cleanTitleAr}
               </h3>
             </Link>
 
-            {/* Clean Description without raw HTML tags (Hidden on very small mobile to maximize space) */}
+            {/* Clean Description */}
             {cleanDescription && (
               <p className="hidden sm:block text-xs text-text-secondary line-clamp-2 leading-relaxed font-normal">
                 {cleanDescription}
@@ -280,7 +283,7 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        "group shrink-0 flex flex-col justify-between space-y-4 snap-start font-alexandria",
+        "group shrink-0 flex flex-col justify-between space-y-3 snap-start font-alexandria",
         className
       )}
       dir="rtl"
@@ -290,16 +293,16 @@ export function ProductCard({
         {/* Clickable Image Area */}
         <Link
           href={`/product/${product.slug}`}
-          className="relative block w-full h-full overflow-hidden"
-          aria-label={product.title_ar}
+          className="relative block w-full h-full"
+          aria-label={cleanTitleAr}
         >
           {primaryImage ? (
             <Image
               src={primaryImage}
-              alt={product.title_ar}
+              alt={cleanTitleAr}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-contain p-0.5 sm:p-1 transition-opacity duration-300"
+              className="object-contain mix-blend-multiply w-full h-full transition-opacity duration-300"
             />
           ) : (
             <ProductVisual
@@ -409,7 +412,7 @@ export function ProductCard({
       </div>
 
       {/* Product Meta & Details Below Image in Arabic */}
-      <div className="space-y-1.5 text-start">
+      <div className="space-y-1 text-start">
         {/* Rating */}
         <div className="flex items-center gap-0.5 text-amber-400">
           {[1, 2, 3, 4, 5].map((star) => (
@@ -426,23 +429,26 @@ export function ProductCard({
           ))}
         </div>
 
-        {/* Title (2 lines clamp) in Arabic */}
+        {/* Title (2 lines clamp with clean height) */}
         <Link
           href={`/product/${product.slug}`}
           className="block group/title"
         >
-          <h3 className="text-xs sm:text-sm font-bold text-brand-900 group-hover/title:text-[#1E6091] transition-colors leading-snug line-clamp-2 min-h-[38px]">
-            {product.title_ar}
+          <h3
+            className="text-xs sm:text-sm font-bold text-brand-900 group-hover/title:text-[#1E6091] transition-colors leading-snug line-clamp-2 min-h-[36px] sm:min-h-[40px] overflow-hidden"
+            title={cleanTitleAr}
+          >
+            {cleanTitleAr}
           </h3>
         </Link>
 
         {/* Price */}
-        <div className="flex items-baseline gap-2.5 pt-0.5">
+        <div className="flex items-baseline gap-2 pt-0.5">
           <span className="text-xs sm:text-base font-extrabold text-[#1E6091]">
             {formatPrice(effectivePrice)}
           </span>
           {hasDiscount && (
-            <span className="text-[11px] sm:text-xs text-text-muted line-through">
+            <span className="text-[10px] sm:text-xs text-text-muted line-through">
               {formatPrice(originalPrice)}
             </span>
           )}

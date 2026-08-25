@@ -46,3 +46,23 @@ export function formatNumber(num: number, locale: string = CURRENCY.locale): str
     return num.toString();
   }
 }
+
+/**
+ * Decodes HTML entities (e.g. &#215; -> ×, &quot; -> ", &amp; -> &) and strips HTML tags
+ */
+export function decodeHtmlEntities(str: string): string {
+  if (!str) return "";
+  return str
+    .replace(/&#215;/g, "×")
+    .replace(/&times;/g, "×")
+    .replace(/&#8211;/g, "–")
+    .replace(/&#8212;/g, "—")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ")
+    .replace(/<\/?[^>]+(>|$)/g, "")
+    .trim();
+}
