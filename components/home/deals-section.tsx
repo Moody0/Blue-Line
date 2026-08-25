@@ -55,17 +55,10 @@ export function DealsSection({ products, dealsSettings }: DealsSectionProps) {
   return (
     <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 group/section relative cv-auto font-alexandria" dir="rtl">
       {/* Section Header */}
-      <div className="text-center space-y-2">
-        <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 border border-red-200/60 shadow-2xs text-xs font-black tracking-wider uppercase">
-          <Flame size={14} className="fill-current text-red-500 animate-pulse" />
-          <span>{badgeText}</span>
-        </div>
+      <div className="text-center">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
           {title}
         </h2>
-        <p className="text-xs sm:text-sm font-semibold text-text-muted">
-          {subtitle}
-        </p>
       </div>
 
       {/* Carousel Wrapper with Hover-Activated Navigation Arrows */}

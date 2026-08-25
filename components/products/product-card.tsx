@@ -285,8 +285,8 @@ export function ProductCard({
       )}
       dir="rtl"
     >
-      {/* Product Image Box on Pure White */}
-      <div className="relative aspect-[1/1] w-full rounded-2xl bg-white overflow-hidden border border-border-default/80 shadow-xs transition-all duration-300">
+      {/* Product Image Box on Neutral Background */}
+      <div className="relative aspect-[1/1] w-full rounded-none sm:rounded-lg bg-[#F6F7F8] overflow-hidden border border-border-default/50 shadow-2xs transition-all duration-300">
         {/* Clickable Image Area */}
         <Link
           href={`/product/${product.slug}`}
@@ -299,7 +299,7 @@ export function ProductCard({
               alt={product.title_ar}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-contain p-2 transition-opacity duration-300"
+              className="object-contain p-3 sm:p-4 transition-opacity duration-300"
             />
           ) : (
             <ProductVisual
@@ -312,13 +312,13 @@ export function ProductCard({
 
         {/* Discount Badge on Top-Left */}
         {hasDiscount && (
-          <span className="absolute top-3 start-3 bg-[#1E6091] text-white text-[11px] font-bold px-2 py-0.5 z-10 shadow-2xs pointer-events-none">
-            -{discountPct}٪
+          <span className="absolute top-2.5 start-2.5 bg-[#1E6091] text-white text-[11px] font-bold px-1.5 py-0.5 rounded-none z-10 pointer-events-none shadow-2xs">
+            -{discountPct}%
           </span>
         )}
 
-        {/* Color Swatches on Bottom-Left if > 1 variant */}
-        {variants.length > 1 && (
+        {/* Color Swatches on Bottom-Left if > 1 variant and not in countdown mode */}
+        {!showCountdown && variants.length > 1 && (
           <div className="absolute bottom-3 start-3 flex items-center gap-1.5 z-20 pointer-events-auto bg-white/90 backdrop-blur-xs p-1 rounded-full border border-black/10 shadow-2xs">
             {variants.map((v) => {
               const isSelected = v.id === (activeVariant?.id ?? defaultVariant?.id);
@@ -394,14 +394,14 @@ export function ProductCard({
           </button>
         </div>
 
-        {/* Live Red Countdown Timer Bar from Screenshot */}
+        {/* Exact Red Countdown Timer from Screenshot (No Box, Pure Red Text + Clock Icon) */}
         {showCountdown && (
           <div
-            className="absolute bottom-2.5 inset-x-3 flex items-center justify-center gap-1.5 py-1 px-2 rounded-lg bg-white/95 backdrop-blur-xs border border-red-200/80 shadow-2xs z-10"
+            className="absolute bottom-2.5 inset-x-0 flex items-center justify-center gap-1.5 text-red-600 font-bold select-none z-10"
             dir="ltr"
           >
-            <Clock size={13} className="text-red-600 shrink-0" />
-            <span className="text-[11px] sm:text-xs font-black text-red-600 font-mono tracking-wider">
+            <Clock size={13} className="text-red-600 shrink-0" strokeWidth={2.2} />
+            <span className="text-xs sm:text-[13px] font-mono font-bold tracking-widest text-red-600">
               {String(timeLeft.days).padStart(2, "0")} : {String(timeLeft.hours).padStart(2, "0")} : {String(timeLeft.minutes).padStart(2, "0")} : {String(timeLeft.seconds).padStart(2, "0")}
             </span>
           </div>
