@@ -299,7 +299,7 @@ export function ProductCard({
               alt={product.title_ar}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-contain p-3 sm:p-4 transition-opacity duration-300"
+              className="object-contain p-0.5 sm:p-1 transition-opacity duration-300"
             />
           ) : (
             <ProductVisual
