@@ -1,6 +1,8 @@
 import {
   getCategories,
   getPopularProducts,
+  getFeaturedProducts,
+  getNewArrivalProducts,
   getTopRatedProducts,
   getDealProducts,
 } from "@/actions/catalog";
@@ -17,14 +19,23 @@ import { ServicePillars } from "@/components/home/service-pillars";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [categories, popularProducts, topRatedProducts, dealProducts, siteSettings] =
-    await Promise.all([
-      getCategories(),
-      getPopularProducts(16),
-      getTopRatedProducts(8),
-      getDealProducts(8),
-      getSiteSettings(),
-    ]);
+  const [
+    categories,
+    bestsellerProducts,
+    featuredProducts,
+    newArrivalProducts,
+    topRatedProducts,
+    dealProducts,
+    siteSettings,
+  ] = await Promise.all([
+    getCategories(),
+    getPopularProducts(8),
+    getFeaturedProducts(8),
+    getNewArrivalProducts(8),
+    getTopRatedProducts(8),
+    getDealProducts(8),
+    getSiteSettings(),
+  ]);
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-28 font-alexandria">
@@ -34,8 +45,12 @@ export default async function HomePage() {
       {/* 2. Shop By 6 Core Flagship Categories with Real Imagery */}
       <CategoryShowcase categories={categories} />
 
-      {/* 3. Popular Products Grid with Tabs (Best Sellers, Featured, New Arrivals) */}
-      <PopularProducts products={popularProducts} />
+      {/* 3. Popular Products Grid with Dynamic Tabs (Best Sellers, Featured, New Arrivals) */}
+      <PopularProducts
+        bestsellerProducts={bestsellerProducts}
+        featuredProducts={featuredProducts}
+        newArrivalProducts={newArrivalProducts}
+      />
 
       {/* 4. Deal Of The Week — with Red Countdown Timer */}
       <DealsSection products={dealProducts} />

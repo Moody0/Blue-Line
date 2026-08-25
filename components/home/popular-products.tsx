@@ -1,53 +1,53 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import type { Product } from "@/types/ecommerce";
 import { cn } from "@/lib/utils";
 import { ProductCard } from "@/components/products/product-card";
 
 interface PopularProductsProps {
-  products: Product[];
+  bestsellerProducts: Product[];
+  featuredProducts: Product[];
+  newArrivalProducts: Product[];
 }
 
-type TabType = "all" | "featured" | "bestseller";
+type TabType = "bestseller" | "featured" | "new";
 
 const TABS: { id: TabType; labelAr: string }[] = [
   { id: "bestseller", labelAr: "الأكثر مبيعاً" },
   { id: "featured", labelAr: "المميزة" },
-  { id: "all", labelAr: "وصل حديثاً" },
+  { id: "new", labelAr: "وصل حديثاً" },
 ];
 
-export function PopularProducts({ products }: PopularProductsProps) {
+export function PopularProducts({
+  bestsellerProducts = [],
+  featuredProducts = [],
+  newArrivalProducts = [],
+}: PopularProductsProps) {
   const [activeTab, setActiveTab] = useState<TabType>("bestseller");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Dynamic filter according to active tab
-  const displayProducts = useMemo(() => {
-    if (!products || products.length === 0) return [];
+  // Active products list based on selected tab
+  const currentProducts =
+    activeTab === "featured"
+      ? featuredProducts.length > 0
+        ? featuredProducts
+        : bestsellerProducts
+      : activeTab === "new"
+      ? newArrivalProducts.length > 0
+        ? newArrivalProducts
+        : bestsellerProducts
+      : bestsellerProducts;
 
-    let filtered: Product[] = [];
-    if (activeTab === "featured") {
-      filtered = products.filter((p) => p.is_featured);
-      if (filtered.length === 0) filtered = products;
-    } else if (activeTab === "all") {
-      // New arrivals: sort by created_at desc
-      filtered = [...products].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-    } else {
-      // Best sellers: products with discount or high demand
-      filtered = [...products].sort((a, b) => {
-        const aScore = (a.discount_price ? 2 : 0) + (a.is_featured ? 1 : 0);
-        const bScore = (b.discount_price ? 2 : 0) + (b.is_featured ? 1 : 0);
-        return bScore - aScore;
-      });
+  // Reset scroll position to beginning when tab changes
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ left: 0, behavior: "smooth" });
     }
+  }, [activeTab]);
 
-    return filtered.slice(0, 8);
-  }, [products, activeTab]);
-
-  // Scroll smoothly in the requested screen direction
+  // Scroll smoothly in requested direction
   const scrollInDirection = (direction: "right" | "left") => {
     if (!scrollContainerRef.current) return;
     const container = scrollContainerRef.current;
@@ -70,7 +70,7 @@ export function PopularProducts({ products }: PopularProductsProps) {
 
   return (
     <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 group/section relative cv-auto font-alexandria" dir="rtl">
-      {/* Section Header with Centered Title & Tabs */}
+      {/* Section Header with Centered Title & Active Filter Tabs */}
       <div className="text-center space-y-4">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
           المنتجات الأكثر طلباً
@@ -96,7 +96,7 @@ export function PopularProducts({ products }: PopularProductsProps) {
         </div>
       </div>
 
-      {/* Carousel Wrapper with Hover-Activated Navigation Arrows */}
+      {/* Carousel Wrapper with Navigation Arrows */}
       <div className="relative">
         {/* Right Arrow Button */}
         <button
@@ -118,14 +118,15 @@ export function PopularProducts({ products }: PopularProductsProps) {
           <ChevronLeft size={22} />
         </button>
 
-        {/* Responsive Horizontal Track */}
+        {/* Responsive Horizontal Track with Key for Smooth Animation */}
         <div
+          key={activeTab}
           ref={scrollContainerRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar pb-4 pt-1 px-1"
+          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar pb-4 pt-1 px-1 transition-opacity duration-300"
         >
-          {displayProducts.map((product) => (
+          {currentProducts.slice(0, 8).map((product) => (
             <ProductCard
-              key={product.id}
+              key={`${activeTab}-${product.id}`}
               product={product}
               className="w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)]"
             />

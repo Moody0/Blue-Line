@@ -66,15 +66,34 @@ export async function getPopularProducts(limit = 10): Promise<Product[]> {
       .from("products")
       .select("*, category:categories(*), variants:product_variants(*)")
       .eq("is_active", true)
+      .order("base_price", { ascending: true })
+      .limit(limit);
+
+    if (error || !data || data.length === 0) {
+      return [...MOCK_PRODUCTS].reverse().slice(0, limit);
+    }
+    return data;
+  } catch {
+    return [...MOCK_PRODUCTS].reverse().slice(0, limit);
+  }
+}
+
+export async function getNewArrivalProducts(limit = 10): Promise<Product[]> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select("*, category:categories(*), variants:product_variants(*)")
+      .eq("is_active", true)
       .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error || !data || data.length === 0) {
-      return MOCK_PRODUCTS.slice(0, limit);
+      return [...MOCK_PRODUCTS].slice(0, limit);
     }
     return data;
   } catch {
-    return MOCK_PRODUCTS.slice(0, limit);
+    return [...MOCK_PRODUCTS].slice(0, limit);
   }
 }
 
