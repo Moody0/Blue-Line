@@ -9,7 +9,9 @@ import { HeroSlider } from "@/components/home/hero-slider";
 import { CategoryShowcase } from "@/components/home/category-showcase";
 import { PopularProducts } from "@/components/home/popular-products";
 import { DealsSection } from "@/components/home/deals-section";
+import { ParallaxBanner } from "@/components/home/parallax-banner";
 import { TopRatedProducts } from "@/components/home/top-rated-products";
+import { CustomerReviews } from "@/components/home/customer-reviews";
 import { ServicePillars } from "@/components/home/service-pillars";
 
 // Fast dynamic server-side rendering with revalidation
@@ -39,10 +41,16 @@ export default async function HomePage() {
       {/* 4. Deal Of The Week — with Red Countdown Timer */}
       <DealsSection products={dealProducts} />
 
-      {/* 5. Top Rated Architectural Fixtures */}
+      {/* 5. Cinematic Parallax Architectural Product Spotlight */}
+      <ParallaxBanner />
+
+      {/* 6. Top Rated Architectural Fixtures */}
       <TopRatedProducts products={topRatedProducts} />
 
-      {/* 6. Highest Quality Service — 4 Detailed Pillars from CMS */}
+      {/* 7. Verified Customer Reviews & Social Proof */}
+      <CustomerReviews />
+
+      {/* 8. Highest Quality Service — 4 Detailed Pillars from CMS */}
       <ServicePillars pillars={siteSettings.service_pillars} />
     </div>
   );
