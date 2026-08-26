@@ -4,18 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, User, LayoutGrid, Search, ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/cart/cart-context";
+import { useSearchModal } from "@/components/layout/search-context";
 import { cn } from "@/lib/utils";
 
 export function MobileBottomBar() {
   const pathname = usePathname();
   const { openDrawer, cartCount } = useCart();
-
-  const navItems = [
-    { label: "الرئيسية", href: "/", icon: Home },
-    { label: "كل المنتجات", href: "/products", icon: LayoutGrid },
-    { label: "بحث", href: "/search", icon: Search },
-    { label: "حسابي", href: "/account", icon: User },
-  ];
+  const { openSearch, isOpen: isSearchOpen } = useSearchModal();
 
   return (
     <div
@@ -23,31 +18,71 @@ export function MobileBottomBar() {
       dir="rtl"
     >
       <nav className="flex items-center justify-around h-16 px-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive =
-            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+        {/* 1. Home */}
+        <Link
+          href="/"
+          className={cn(
+            "flex flex-col items-center justify-center flex-1 py-1 gap-1 transition-colors",
+            pathname === "/"
+              ? "text-[#1E6091] font-bold"
+              : "text-text-secondary hover:text-brand-900"
+          )}
+        >
+          <Home size={18} strokeWidth={pathname === "/" ? 2.2 : 1.8} />
+          <span className="text-[10px] font-bold leading-none">الرئيسية</span>
+        </Link>
 
-          return (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={cn(
-                "flex flex-col items-center justify-center flex-1 py-1 gap-1 transition-colors",
-                isActive
-                  ? "text-[#1E6091] font-bold"
-                  : "text-text-secondary hover:text-brand-900"
-              )}
-            >
-              <Icon size={18} strokeWidth={isActive ? 2.2 : 1.8} />
-              <span className="text-[10px] font-bold leading-none">
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
+        {/* 2. All Products */}
+        <Link
+          href="/products"
+          className={cn(
+            "flex flex-col items-center justify-center flex-1 py-1 gap-1 transition-colors",
+            pathname.startsWith("/products") || pathname.startsWith("/category")
+              ? "text-[#1E6091] font-bold"
+              : "text-text-secondary hover:text-brand-900"
+          )}
+        >
+          <LayoutGrid
+            size={18}
+            strokeWidth={
+              pathname.startsWith("/products") || pathname.startsWith("/category")
+                ? 2.2
+                : 1.8
+            }
+          />
+          <span className="text-[10px] font-bold leading-none">كل المنتجات</span>
+        </Link>
 
-        {/* Cart Item in Arabic */}
+        {/* 3. Search (Triggers Live Search Modal on Mobile) */}
+        <button
+          type="button"
+          onClick={openSearch}
+          className={cn(
+            "flex flex-col items-center justify-center flex-1 py-1 gap-1 transition-colors cursor-pointer",
+            isSearchOpen
+              ? "text-[#1E6091] font-bold"
+              : "text-text-secondary hover:text-brand-900"
+          )}
+        >
+          <Search size={18} strokeWidth={isSearchOpen ? 2.2 : 1.8} />
+          <span className="text-[10px] font-bold leading-none">بحث</span>
+        </button>
+
+        {/* 4. Account */}
+        <Link
+          href="/account"
+          className={cn(
+            "flex flex-col items-center justify-center flex-1 py-1 gap-1 transition-colors",
+            pathname.startsWith("/account")
+              ? "text-[#1E6091] font-bold"
+              : "text-text-secondary hover:text-brand-900"
+          )}
+        >
+          <User size={18} strokeWidth={pathname.startsWith("/account") ? 2.2 : 1.8} />
+          <span className="text-[10px] font-bold leading-none">حسابي</span>
+        </Link>
+
+        {/* 5. Cart */}
         <button
           type="button"
           onClick={openDrawer}

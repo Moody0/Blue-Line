@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, ShoppingBag, Menu, User, Heart, LayoutGrid } from "lucide-react";
+import { Search, ShoppingBag, Menu, User, Heart } from "lucide-react";
 import { Logo } from "./logo";
 import { MobileNav } from "./mobile-nav";
-import { LiveSearchModal } from "./live-search-modal";
+import { useSearchModal } from "./search-context";
 import { useCart } from "@/components/cart/cart-context";
 import { useFavorites } from "@/components/favorites/favorites-context";
 import { createClient } from "@/lib/supabase/client";
@@ -31,7 +31,6 @@ const DEFAULT_MAIN_PAGES = [
 
 export function Navbar({ cartItemCount, onOpenCart, navLinks, categories }: NavbarProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
   const pathname = usePathname();
 
@@ -40,9 +39,10 @@ export function Navbar({ cartItemCount, onOpenCart, navLinks, categories }: Navb
     (link) => link.is_active !== false
   );
 
-  // Access cart and favorites context
+  // Access cart, favorites, and search modal context
   const cart = useCart();
   const { favoritesCount } = useFavorites();
+  const { openSearch } = useSearchModal();
   const count = cartItemCount !== undefined ? cartItemCount : cart.cartCount;
   const handleOpenCart = onOpenCart || cart.openDrawer;
 
@@ -138,11 +138,11 @@ export function Navbar({ cartItemCount, onOpenCart, navLinks, categories }: Navb
 
             {/* ── 3. Left side: Utility Icons & Mobile Category Menu ── */}
             <div className="flex items-center gap-1.5 sm:gap-2.5">
-              {/* Live Search Trigger (Desktop only - mobile has it in Bottom Bar) */}
+              {/* Live Search Trigger (Desktop & Mobile Navbar) */}
               <button
                 type="button"
-                onClick={() => setSearchModalOpen(true)}
-                className="hidden md:flex p-2 text-text-secondary hover:text-brand-900 hover:bg-surface-100 rounded-full transition-colors cursor-pointer"
+                onClick={openSearch}
+                className="flex p-2 text-text-secondary hover:text-brand-900 hover:bg-surface-100 rounded-full transition-colors cursor-pointer"
                 aria-label="بحث في المنتجات"
               >
                 <Search size={20} />
@@ -216,12 +216,6 @@ export function Navbar({ cartItemCount, onOpenCart, navLinks, categories }: Navb
           </div>
         </div>
       </header>
-
-      {/* ── Live Instant Search Modal ── */}
-      <LiveSearchModal
-        isOpen={searchModalOpen}
-        onClose={() => setSearchModalOpen(false)}
-      />
 
       {/* ── All Categories & Navigation Drawer (Mobile only) ── */}
       <MobileNav

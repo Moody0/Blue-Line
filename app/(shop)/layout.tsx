@@ -3,6 +3,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { CartProvider } from "@/components/cart/cart-context";
 import { FavoritesProvider } from "@/components/favorites/favorites-context";
+import { SearchModalProvider } from "@/components/layout/search-context";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
 import { ScrollToTop } from "@/components/layout/scroll-to-top";
@@ -23,15 +24,17 @@ export default async function ShopLayout({
   return (
     <CartProvider>
       <FavoritesProvider>
-        <div className="flex min-h-screen flex-col bg-surface-white text-text-primary pb-16 md:pb-0">
-          <AnnouncementBar />
-          <Navbar navLinks={settings.nav_links} categories={categories} />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <CartDrawer />
-          <MobileBottomBar />
-          <ScrollToTop />
-        </div>
+        <SearchModalProvider>
+          <div className="flex min-h-screen flex-col bg-surface-white text-text-primary pb-16 md:pb-0">
+            <AnnouncementBar />
+            <Navbar navLinks={settings.nav_links} categories={categories} />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <CartDrawer />
+            <MobileBottomBar />
+            <ScrollToTop />
+          </div>
+        </SearchModalProvider>
       </FavoritesProvider>
     </CartProvider>
   );
