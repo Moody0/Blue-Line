@@ -138,11 +138,11 @@ export function Navbar({ cartItemCount, onOpenCart, navLinks, categories }: Navb
 
             {/* ── 3. Left side: Utility Icons & Mobile Category Menu ── */}
             <div className="flex items-center gap-1.5 sm:gap-2.5">
-              {/* Live Search Trigger (Desktop only - mobile has it in Bottom Bar) */}
+              {/* Live Search Trigger (Always in Top Header on Mobile & Desktop) */}
               <button
                 type="button"
                 onClick={openSearch}
-                className="hidden md:flex p-2 text-text-secondary hover:text-brand-900 hover:bg-surface-100 rounded-full transition-colors cursor-pointer"
+                className="p-2 text-text-secondary hover:text-brand-900 hover:bg-surface-100 rounded-full transition-colors cursor-pointer"
                 aria-label="بحث في المنتجات"
               >
                 <Search size={20} />

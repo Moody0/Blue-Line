@@ -2,15 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, User, LayoutGrid, Search, ShoppingBag } from "lucide-react";
+import { Home, User, LayoutGrid, ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/cart/cart-context";
-import { useSearchModal } from "@/components/layout/search-context";
 import { cn } from "@/lib/utils";
 
 export function MobileBottomBar() {
   const pathname = usePathname();
   const { openDrawer, cartCount } = useCart();
-  const { openSearch, isOpen: isSearchOpen } = useSearchModal();
 
   return (
     <div
@@ -53,22 +51,7 @@ export function MobileBottomBar() {
           <span className="text-[10px] font-bold leading-none">كل المنتجات</span>
         </Link>
 
-        {/* 3. Search (Triggers Live Search Modal on Mobile) */}
-        <button
-          type="button"
-          onClick={openSearch}
-          className={cn(
-            "flex flex-col items-center justify-center flex-1 py-1 gap-1 transition-colors cursor-pointer",
-            isSearchOpen
-              ? "text-[#1E6091] font-bold"
-              : "text-text-secondary hover:text-brand-900"
-          )}
-        >
-          <Search size={18} strokeWidth={isSearchOpen ? 2.2 : 1.8} />
-          <span className="text-[10px] font-bold leading-none">بحث</span>
-        </button>
-
-        {/* 4. Account */}
+        {/* 3. Account */}
         <Link
           href="/account"
           className={cn(
@@ -82,7 +65,7 @@ export function MobileBottomBar() {
           <span className="text-[10px] font-bold leading-none">حسابي</span>
         </Link>
 
-        {/* 5. Cart */}
+        {/* 4. Cart */}
         <button
           type="button"
           onClick={openDrawer}
