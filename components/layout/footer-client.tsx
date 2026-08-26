@@ -83,36 +83,6 @@ export function FooterClient({
                   {footer.phone_display}
                 </a>
               </div>
-
-              {/* Social Media Icons on Mobile */}
-              <div className="pt-2 flex items-center gap-2.5">
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="واتساب"
-                  title="تواصل عبر واتساب"
-                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#25D366] text-white flex items-center justify-center transition-all duration-200 cursor-pointer"
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.301-.15-1.78-.878-2.056-.979-.276-.1-.476-.15-.677.15-.2.301-.777.98-1.028 1.256-.25.276-.501.301-.802.15-.301-.15-1.272-.469-2.423-1.496-.897-.799-1.503-1.787-1.679-2.088-.175-.301-.019-.464.132-.614.136-.135.301-.351.451-.527.15-.175.2-.301.301-.501.1-.2.05-.376-.025-.526-.075-.15-.677-1.633-.928-2.235-.244-.587-.492-.507-.677-.517l-.577-.01c-.2 0-.526.075-.802.376-.276.301-1.053 1.028-1.053 2.508s1.078 2.909 1.229 3.11c.15.2 2.122 3.24 5.141 4.544.718.31 1.279.496 1.716.635.721.23 1.378.197 1.897.12.578-.087 1.78-.727 2.031-1.43.25-.702.25-1.304.175-1.43-.075-.125-.276-.2-.577-.35z" />
-                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.115.547 4.103 1.505 5.834L0 24l6.338-1.463C8.016 23.479 9.948 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.815 0-3.504-.492-4.961-1.349l-.356-.208-3.753.867.882-3.664-.229-.366C2.697 15.82 2.2 13.978 2.2 12 2.2 6.597 6.597 2.2 12 2.2s9.8 4.397 9.8 9.8c0 5.403-4.397 9.8-9.8 9.8z" />
-                  </svg>
-                </a>
-
-                <a
-                  href={footer.facebook_url || "https://facebook.com"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="فيسبوك"
-                  title="صفحتنا على فيسبوك"
-                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#1877F2] text-white flex items-center justify-center transition-all duration-200 cursor-pointer"
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                </a>
-              </div>
             </div>
           </div>
         </div>
@@ -202,6 +172,54 @@ export function FooterClient({
                 ))}
               </ul>
             </div>
+          </div>
+        </div>
+
+        {/* ── Always Visible Mobile Social & Contact Icons ── */}
+        <div className="pt-6 pb-2 flex items-center justify-between gap-3">
+          <span className="text-xs font-semibold text-surface-200/80">
+            تواصل معنا مباشرة:
+          </span>
+
+          <div className="flex items-center gap-2.5">
+            {/* WhatsApp */}
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="واتساب"
+              title="تواصل عبر واتساب"
+              className="w-9 h-9 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-md hover:scale-105 transition-transform cursor-pointer"
+            >
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.301-.15-1.78-.878-2.056-.979-.276-.1-.476-.15-.677.15-.2.301-.777.98-1.028 1.256-.25.276-.501.301-.802.15-.301-.15-1.272-.469-2.423-1.496-.897-.799-1.503-1.787-1.679-2.088-.175-.301-.019-.464.132-.614.136-.135.301-.351.451-.527.15-.175.2-.301.301-.501.1-.2.05-.376-.025-.526-.075-.15-.677-1.633-.928-2.235-.244-.587-.492-.507-.677-.517l-.577-.01c-.2 0-.526.075-.802.376-.276.301-1.053 1.028-1.053 2.508s1.078 2.909 1.229 3.11c.15.2 2.122 3.24 5.141 4.544.718.31 1.279.496 1.716.635.721.23 1.378.197 1.897.12.578-.087 1.78-.727 2.031-1.43.25-.702.25-1.304.175-1.43-.075-.125-.276-.2-.577-.35z" />
+                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.115.547 4.103 1.505 5.834L0 24l6.338-1.463C8.016 23.479 9.948 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.815 0-3.504-.492-4.961-1.349l-.356-.208-3.753.867.882-3.664-.229-.366C2.697 15.82 2.2 13.978 2.2 12 2.2 6.597 6.597 2.2 12 2.2s9.8 4.397 9.8 9.8c0 5.403-4.397 9.8-9.8 9.8z" />
+              </svg>
+            </a>
+
+            {/* Facebook */}
+            <a
+              href={footer.facebook_url || "https://facebook.com"}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="فيسبوك"
+              title="صفحتنا على فيسبوك"
+              className="w-9 h-9 rounded-full bg-[#1877F2] text-white flex items-center justify-center shadow-md hover:scale-105 transition-transform cursor-pointer"
+            >
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+              </svg>
+            </a>
+
+            {/* Direct Phone Call */}
+            <a
+              href={`tel:${footer.phone_international || footer.phone_display}`}
+              aria-label="اتصال هاتفي"
+              title="اتصال هاتفي"
+              className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#1E6091] text-white flex items-center justify-center shadow-md hover:scale-105 transition-all cursor-pointer"
+            >
+              <Phone size={15} />
+            </a>
           </div>
         </div>
       </div>
