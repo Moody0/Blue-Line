@@ -43,7 +43,7 @@ export default async function WarrantyPage() {
               <span>{warranty.durationAr}</span>
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
             {warranty.titleAr}
           </h1>
           <p className="text-xs sm:text-sm text-text-secondary leading-relaxed max-w-2xl">

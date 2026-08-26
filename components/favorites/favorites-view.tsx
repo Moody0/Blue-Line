@@ -99,7 +99,7 @@ export function FavoritesView() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-default">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
               المنتجات المفضلة
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-[#1E6091] text-white text-xs font-bold font-mono shadow-2xs">

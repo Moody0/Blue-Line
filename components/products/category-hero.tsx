@@ -44,7 +44,7 @@ export function CategoryHero({ category, productCount }: CategoryHeroProps) {
         </div>
 
         {/* Category Title */}
-        <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-sm">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight drop-shadow-sm">
           {titleAr}
         </h1>
 

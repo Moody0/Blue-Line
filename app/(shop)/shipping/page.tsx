@@ -42,7 +42,7 @@ export default async function ShippingPage() {
               <span>تغطية لجميع المحافظات</span>
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
             {shipping.title}
           </h1>
           {shipping.subtitle && (

@@ -58,7 +58,7 @@ export function CategoryShowcase({ categories = [] }: CategoryShowcaseProps) {
       {/* Header with Title & Direct Link to Full Catalog */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-2 border-b border-border-default/60 text-center sm:text-start">
         <div className="space-y-1">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
             تسوق حسب التشكيلات الأساسية
           </h2>
           <p className="text-xs sm:text-sm font-semibold text-text-muted">

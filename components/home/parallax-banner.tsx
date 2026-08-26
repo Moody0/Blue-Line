@@ -37,7 +37,7 @@ export function ParallaxBanner({
           </p>
 
           {/* Main Headline */}
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold leading-tight sm:leading-snug tracking-tight drop-shadow-md max-w-3xl mx-auto">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold leading-snug tracking-tight drop-shadow-md max-w-3xl mx-auto">
             {title}
           </h2>
 

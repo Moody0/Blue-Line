@@ -47,7 +47,7 @@ export function ProductGrid({
       {(title || subtitle) && (
         <div className="space-y-1">
           {title && (
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
               {title}
             </h2>
           )}

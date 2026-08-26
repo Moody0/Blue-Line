@@ -42,7 +42,7 @@ export default async function TermsPage() {
               <span>اتفاقية الاستخدام الرسمية</span>
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
             {terms.title}
           </h1>
           {terms.subtitle && (

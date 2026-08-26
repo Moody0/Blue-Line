@@ -42,7 +42,7 @@ export default async function PrivacyPage() {
               <span>حماية وتشفير كامل</span>
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
             {privacy.title}
           </h1>
           {privacy.subtitle && (

@@ -56,7 +56,7 @@ export function DealsSection({ products, dealsSettings }: DealsSectionProps) {
     <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 group/section relative cv-auto font-alexandria" dir="rtl">
       {/* Section Header */}
       <div className="text-center">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
           {title}
         </h2>
       </div>

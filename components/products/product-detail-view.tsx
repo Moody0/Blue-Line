@@ -335,7 +335,7 @@ export function ProductDetailView({
               </div>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-900 leading-tight">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 leading-snug">
               {product.title_ar}
             </h1>
 
@@ -514,7 +514,7 @@ export function ProductDetailView({
       {relatedProducts.length > 0 && (
         <section className="space-y-8 pt-10 border-t border-border-default">
           <div className="text-center space-y-1">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
               منتجات ذات صلة
             </h2>
             <p className="text-xs sm:text-sm font-semibold text-text-muted">

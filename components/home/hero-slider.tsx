@@ -142,7 +142,7 @@ export function HeroSlider({ slides }: HeroSliderProps) {
         )}
 
         {/* Main Title */}
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight sm:leading-[1.15] max-w-3xl mx-auto drop-shadow-sm">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight sm:leading-[1.15] max-w-3xl mx-auto drop-shadow-sm">
           {slide?.title}
         </h1>
 

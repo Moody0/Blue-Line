@@ -23,7 +23,7 @@ export default function TrackOrderPage() {
 
         {/* Page Header */}
         <div className="space-y-2 pb-6 border-b border-border-default">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
             تتبع حالة الطلب والشحنة
           </h1>
           <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">

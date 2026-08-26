@@ -41,7 +41,7 @@ export function TopRatedProducts({ products }: TopRatedProductsProps) {
     <section className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 group/section relative cv-auto" dir="rtl">
       {/* Section Header with Centered Title Only */}
       <div className="text-center space-y-2">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
           المنتجات الأعلى تقييماً
         </h2>
         <p className="text-xs sm:text-sm font-semibold text-text-muted">

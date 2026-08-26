@@ -55,7 +55,7 @@ export default async function CheckoutSuccessPage({
           <span className="text-xs font-extrabold text-[#1E6091] uppercase tracking-wider block">
             تم استلام وتأكيد طلبك بنجاح
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
             شكراً لثقتك في بلو لاين للأدوات الصحية
           </h1>
           <p className="text-xs sm:text-sm text-text-muted max-w-lg mx-auto leading-relaxed">

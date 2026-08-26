@@ -18,7 +18,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <Search size={14} />
           <span>نتائج البحث</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-900">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-900 tracking-tight">
           {query ? `البحث عن: "${query}"` : "البحث في تشكيلات المنتجات"}
         </h1>
         <p className="text-xs text-text-muted">
