@@ -20,9 +20,9 @@ export function FooterClient({
   servicesCol,
   whatsappUrl,
 }: FooterClientProps) {
-  // Mobile accordion state for the navigation link columns
+  // Mobile accordion state for the navigation link columns (all closed by default)
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    categories: true, // open first by default on mobile for immediate product discovery
+    categories: false,
     services: false,
   });
 
