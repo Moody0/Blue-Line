@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Phone, ChevronDown, Check, ArrowLeft, Mail, Send } from "lucide-react";
+import { Phone, ChevronDown, ArrowLeft } from "lucide-react";
 import { Logo } from "./logo";
 import { cn } from "@/lib/utils";
 import type { FooterContent, FooterColumn } from "@/types/ecommerce";
@@ -20,32 +20,18 @@ export function FooterClient({
   servicesCol,
   whatsappUrl,
 }: FooterClientProps) {
-  // Mobile accordion state (all collapsed by default except quick look or user toggle)
+  // Mobile accordion state
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     storeInfo: false,
     categories: true, // open first by default on mobile for immediate discovery
     services: false,
-    newsletter: true,
   });
-
-  const [email, setEmail] = useState("");
-  const [isSubscribed, setIsSubscribed] = useState(false);
 
   const toggleSection = (key: string) => {
     setOpenSections((prev) => ({
       ...prev,
       [key]: !prev[key],
     }));
-  };
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setIsSubscribed(true);
-    setTimeout(() => {
-      setEmail("");
-      setIsSubscribed(false);
-    }, 4000);
   };
 
   return (
@@ -95,6 +81,36 @@ export function FooterClient({
                   className="font-plus-jakarta font-bold text-white hover:text-accent-300"
                 >
                   {footer.phone_display}
+                </a>
+              </div>
+
+              {/* Social Media Icons on Mobile */}
+              <div className="pt-2 flex items-center gap-2.5">
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="واتساب"
+                  title="تواصل عبر واتساب"
+                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#25D366] text-white flex items-center justify-center transition-all duration-200 cursor-pointer"
+                >
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.301-.15-1.78-.878-2.056-.979-.276-.1-.476-.15-.677.15-.2.301-.777.98-1.028 1.256-.25.276-.501.301-.802.15-.301-.15-1.272-.469-2.423-1.496-.897-.799-1.503-1.787-1.679-2.088-.175-.301-.019-.464.132-.614.136-.135.301-.351.451-.527.15-.175.2-.301.301-.501.1-.2.05-.376-.025-.526-.075-.15-.677-1.633-.928-2.235-.244-.587-.492-.507-.677-.517l-.577-.01c-.2 0-.526.075-.802.376-.276.301-1.053 1.028-1.053 2.508s1.078 2.909 1.229 3.11c.15.2 2.122 3.24 5.141 4.544.718.31 1.279.496 1.716.635.721.23 1.378.197 1.897.12.578-.087 1.78-.727 2.031-1.43.25-.702.25-1.304.175-1.43-.075-.125-.276-.2-.577-.35z" />
+                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.115.547 4.103 1.505 5.834L0 24l6.338-1.463C8.016 23.479 9.948 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.815 0-3.504-.492-4.961-1.349l-.356-.208-3.753.867.882-3.664-.229-.366C2.697 15.82 2.2 13.978 2.2 12 2.2 6.597 6.597 2.2 12 2.2s9.8 4.397 9.8 9.8c0 5.403-4.397 9.8-9.8 9.8z" />
+                  </svg>
+                </a>
+
+                <a
+                  href={footer.facebook_url || "https://facebook.com"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="فيسبوك"
+                  title="صفحتنا على فيسبوك"
+                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#1877F2] text-white flex items-center justify-center transition-all duration-200 cursor-pointer"
+                >
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
                 </a>
               </div>
             </div>
@@ -188,42 +204,6 @@ export function FooterClient({
             </div>
           </div>
         </div>
-
-        {/* Section 4: Newsletter Subscription (Always prominent or collapsible) */}
-        <div className="py-5 space-y-3">
-          <div className="space-y-1">
-            <h4 className="text-sm font-bold text-white">النشرة البريدية والعروض الحصرية</h4>
-            <p className="text-xs text-surface-200/70 leading-relaxed">
-              اشترك لتصلك أحدث العروض والخصومات وتشكيلات المنتجات الجديدة
-            </p>
-          </div>
-
-          {isSubscribed ? (
-            <div className="p-3 rounded-lg bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center gap-2">
-              <Check size={16} className="text-emerald-400 shrink-0" />
-              <span>تم تسجيل بريدك بنجاح! ستصلك أحدث العروض الحصرية.</span>
-            </div>
-          ) : (
-            <form onSubmit={handleSubscribe} className="space-y-2.5 pt-1">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="أدخل بريدك الإلكتروني..."
-                className="w-full h-11 px-3.5 rounded-lg bg-white text-slate-900 placeholder:text-slate-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1E6091]"
-                dir="rtl"
-              />
-              <button
-                type="submit"
-                className="w-full h-11 rounded-lg bg-[#1E6091] hover:bg-[#164c74] text-white text-xs font-bold tracking-wider uppercase transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
-              >
-                <span>اشتراك</span>
-                <Send size={13} className="rtl:rotate-180" />
-              </button>
-            </form>
-          )}
-        </div>
       </div>
 
       {/* ────────────────────────────────────────────────────────── */}
@@ -316,35 +296,6 @@ export function FooterClient({
               </li>
             ))}
           </ul>
-
-          {/* Desktop Newsletter Input */}
-          <div className="pt-3 space-y-2">
-            <h4 className="text-[11px] font-bold text-white uppercase tracking-wider">
-              النشرة البريدية
-            </h4>
-            {isSubscribed ? (
-              <p className="text-[11px] text-emerald-400 font-bold">
-                ✓ تم الاشتراك بنجاح!
-              </p>
-            ) : (
-              <form onSubmit={handleSubscribe} className="flex gap-2">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="بريدك الإلكتروني..."
-                  className="h-9 px-3 rounded-lg bg-white/10 text-white placeholder:text-surface-200/50 text-xs flex-1 focus:outline-none focus:ring-1 focus:ring-[#1E6091] border border-white/15"
-                />
-                <button
-                  type="submit"
-                  className="h-9 px-4 rounded-lg bg-[#1E6091] hover:bg-[#164c74] text-white text-xs font-bold cursor-pointer transition-colors"
-                >
-                  اشتراك
-                </button>
-              </form>
-            )}
-          </div>
         </div>
       </div>
     </div>
