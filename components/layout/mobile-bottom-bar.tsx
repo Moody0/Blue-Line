@@ -51,21 +51,7 @@ export function MobileBottomBar() {
           <span className="text-[10px] font-bold leading-none">كل المنتجات</span>
         </Link>
 
-        {/* 3. Account */}
-        <Link
-          href="/account"
-          className={cn(
-            "flex flex-col items-center justify-center flex-1 py-1 gap-1 transition-colors",
-            pathname.startsWith("/account")
-              ? "text-[#1E6091] font-bold"
-              : "text-text-secondary hover:text-brand-900"
-          )}
-        >
-          <User size={18} strokeWidth={pathname.startsWith("/account") ? 2.2 : 1.8} />
-          <span className="text-[10px] font-bold leading-none">حسابي</span>
-        </Link>
-
-        {/* 4. Cart */}
+        {/* 3. Cart */}
         <button
           type="button"
           onClick={openDrawer}
@@ -81,6 +67,20 @@ export function MobileBottomBar() {
           </div>
           <span className="text-[10px] font-bold leading-none">السلة</span>
         </button>
+
+        {/* 4. Account */}
+        <Link
+          href="/account"
+          className={cn(
+            "flex flex-col items-center justify-center flex-1 py-1 gap-1 transition-colors",
+            pathname.startsWith("/account")
+              ? "text-[#1E6091] font-bold"
+              : "text-text-secondary hover:text-brand-900"
+          )}
+        >
+          <User size={18} strokeWidth={pathname.startsWith("/account") ? 2.2 : 1.8} />
+          <span className="text-[10px] font-bold leading-none">حسابي</span>
+        </Link>
       </nav>
     </div>
   );
