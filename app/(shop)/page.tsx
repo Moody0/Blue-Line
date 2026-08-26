@@ -58,14 +58,14 @@ export default async function HomePage() {
       {/* 5. Top Rated Architectural Fixtures */}
       <TopRatedProducts products={topRatedProducts} />
 
-      {/* 6. Deal Of The Week — Configurable from CMS with Red Countdown Timer */}
+      {/* 6. Highest Quality Service — 4 Detailed Pillars (Horizontal Carousel on Mobile) */}
+      <ServicePillars pillars={siteSettings.service_pillars} />
+
+      {/* 7. Deal Of The Week — Configurable from CMS with Red Countdown Timer */}
       <DealsSection
         products={dealProducts}
         dealsSettings={siteSettings.deals_section}
       />
-
-      {/* 7. Highest Quality Service — 4 Detailed Pillars (Horizontal Carousel on Mobile) */}
-      <ServicePillars pillars={siteSettings.service_pillars} />
     </div>
   );
 }
