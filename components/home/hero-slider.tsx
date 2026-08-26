@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -46,30 +46,66 @@ export function HeroSlider({ slides }: HeroSliderProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  const scrollRight = () => {
-    setCurrentSlide((prev) => (prev === 0 ? currentSlides.length - 1 : prev - 1));
-  };
+  // Touch Swipe State
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const minSwipeDistance = 45;
 
-  const scrollLeft = () => {
+  const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % currentSlides.length);
   };
 
-  // Auto rotation: auto scroll to the right every 7 seconds
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? currentSlides.length - 1 : prev - 1));
+  };
+
+  // Auto rotation: auto rotate every 7 seconds when not paused
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
-      scrollRight();
+      nextSlide();
     }, 7000);
     return () => clearInterval(interval);
   }, [isPaused, currentSlides.length]);
+
+  // Touch gesture handlers for mobile swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsPaused(true);
+    touchStartX.current = e.targetTouches[0].clientX;
+    touchEndX.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    setIsPaused(false);
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const distance = touchStartX.current - touchEndX.current;
+
+    if (distance > minSwipeDistance) {
+      // Swiped Left -> Advance to next slide
+      nextSlide();
+    } else if (distance < -minSwipeDistance) {
+      // Swiped Right -> Go to previous slide
+      prevSlide();
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
 
   const slide = currentSlides[currentSlide] || currentSlides[0];
 
   return (
     <section
-      className="group relative w-full overflow-hidden bg-neutral-900 text-white min-h-[500px] sm:min-h-[580px] lg:min-h-[640px] flex items-center justify-center select-none"
+      className="group relative w-full overflow-hidden bg-neutral-900 text-white min-h-[500px] sm:min-h-[580px] lg:min-h-[640px] flex items-center justify-center select-none touch-pan-y"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       aria-label="بانر العرض الرئيسي"
     >
       {/* Background Image Slides with Smooth Fade */}
@@ -126,7 +162,7 @@ export function HeroSlider({ slides }: HeroSliderProps) {
       {/* Left Arrow Button */}
       <button
         type="button"
-        onClick={scrollLeft}
+        onClick={prevSlide}
         aria-label="السابق"
         className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white text-black shadow-lg flex items-center justify-center transition-colors duration-300 hover:bg-neutral-100 z-20 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto cursor-pointer"
       >
@@ -136,7 +172,7 @@ export function HeroSlider({ slides }: HeroSliderProps) {
       {/* Right Arrow Button */}
       <button
         type="button"
-        onClick={scrollRight}
+        onClick={nextSlide}
         aria-label="التالي"
         className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white text-black shadow-lg flex items-center justify-center transition-colors duration-300 hover:bg-neutral-100 z-20 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto cursor-pointer"
       >
