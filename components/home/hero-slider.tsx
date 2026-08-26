@@ -85,11 +85,11 @@ export function HeroSlider({ slides }: HeroSliderProps) {
     const distance = touchStartX.current - touchEndX.current;
 
     if (distance > minSwipeDistance) {
-      // Swiped Left -> Advance to next slide
-      nextSlide();
-    } else if (distance < -minSwipeDistance) {
-      // Swiped Right -> Go to previous slide
+      // Swiped Left in RTL -> Go to previous slide
       prevSlide();
+    } else if (distance < -minSwipeDistance) {
+      // Swiped Right in RTL -> Advance to next slide
+      nextSlide();
     }
 
     touchStartX.current = null;
